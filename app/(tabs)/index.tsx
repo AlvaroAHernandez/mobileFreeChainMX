@@ -1,98 +1,129 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { useGlobalStyles } from '@/constants/globalStyles';
+import { getThemeColors } from '@/constants/theme';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { ScrollView, Text, TouchableOpacity, useColorScheme, View } from 'react-native';
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const router = useRouter();
+  const gs = useGlobalStyles();
+  const scheme = useColorScheme() || 'dark';
+  const Colors = getThemeColors(scheme);
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  return (
+    <ThemedView style={gs.screen}>
+      <ScrollView contentContainerStyle={gs.scrollContent}>
+        {/* Header */}
+        <View style={[gs.header]}>
+          <ThemedText style={gs.headerTitle}>FREE CHAIN MX</ThemedText>
+        </View>
+
+        {/* Bienvenida */}
+        <View style={{ marginTop: 20, paddingHorizontal: 20 }}>
+          <ThemedText style={[gs.title, { fontSize: 22 }]}>
+            Hola, Juan Carlos
+          </ThemedText>
+          <ThemedText style={[gs.textSecondary, { marginTop: 4 }]}>
+            Bienvenido de vuelta
+          </ThemedText>
+        </View>
+
+        {/* === Sección: Mis Motoclubs === */}
+        <View style={[gs.sectionHeader, { paddingHorizontal: 20 }]}>
+          <ThemedText style={gs.sectionTitle}>Mis Motoclubs</ThemedText>
+          <TouchableOpacity
+            style={[gs.primaryButton, { paddingVertical: 6, paddingHorizontal: 14 }]}>
+            <Text style={gs.primaryButtonText}>Crear</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={[gs.card, { marginHorizontal: 20 }]}>
+          <ThemedText style={[gs.textPrimary, { fontWeight: '600', fontSize: 16 }]}>
+            Riders del Valle
+          </ThemedText>
+          <ThemedText style={[gs.textSecondary, { marginTop: 6 }]}>
+            Club de motociclistas apasionados por las rutas de montaña y la aventura.
+          </ThemedText>
+          <ThemedText style={[gs.textMuted, { marginTop: 6 }]}>
+            El Valle BCS • 19 miembros
+          </ThemedText>
+        </View>
+
+        {/* === Sección: Mi Garaje === */}
+        <View style={[gs.sectionHeader, { paddingHorizontal: 20 }]}>
+          <ThemedText style={gs.sectionTitle}>Mi Garaje</ThemedText>
+          <TouchableOpacity onPress={() => router.push('/garage')}>
+            <ThemedText style={{ color: Colors.tint, fontSize: 13 }}>
+              Ver todas &gt;
+            </ThemedText>
+          </TouchableOpacity>
+        </View>
+
+        <View style={[gs.card, { marginHorizontal: 20 }]}>
+          <ThemedText style={[gs.textPrimary, { fontWeight: '600', fontSize: 16 }]}>
+            Ducati Monster
+          </ThemedText>
+          <ThemedText style={[gs.textMuted, { marginTop: 4 }]}>
+            Año 2020 • 1234ABC
+          </ThemedText>
+        </View>
+
+        <View style={[gs.card, { marginHorizontal: 20 }]}>
+          <ThemedText style={[gs.textPrimary, { fontWeight: '600', fontSize: 16 }]}>
+            Harley-Davidson Low Rider S
+          </ThemedText>
+          <ThemedText style={[gs.textMuted, { marginTop: 4 }]}>
+            Año 2020 • 5678XYZ
+          </ThemedText>
+        </View>
+
+        {/* === Sección: Accesos rápidos === */}
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginTop: 24,
+            paddingHorizontal: 20,
+          }}>
+          <View
+            style={[
+              gs.card,
+              {
+                flex: 1,
+                marginRight: 10,
+                alignItems: 'flex-start',
+                backgroundColor: Colors.surface,
+              },
+            ]}>
+            <ThemedText style={[gs.textPrimary, { fontWeight: '600', fontSize: 16 }]}>
+              Seguridad
+            </ThemedText>
+            <ThemedText style={[gs.textSecondary, { marginTop: 4 }]}>
+              Alertas y Ubicación
+            </ThemedText>
+          </View>
+
+          <View
+            style={[
+              gs.card,
+              {
+                flex: 1,
+                marginLeft: 10,
+                alignItems: 'flex-start',
+                backgroundColor: Colors.surface,
+              },
+            ]}>
+            <ThemedText style={[gs.textPrimary, { fontWeight: '600', fontSize: 16 }]}>
+              Salud
+            </ThemedText>
+            <ThemedText style={[gs.textSecondary, { marginTop: 4 }]}>
+              Info Médica
+            </ThemedText>
+          </View>
+        </View>
+      </ScrollView>
+    </ThemedView>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});

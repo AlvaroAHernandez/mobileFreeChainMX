@@ -1,41 +1,52 @@
 /**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
+ * Combina modo claro/oscuro + tipografía por plataforma + escalas reutilizables
  */
 
 import { Platform } from 'react-native';
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+// ===== Colores principales =====
+const primaryBlue = '#3B5BFE';
+const darkBackground = '#000';
+const darkSurface = '#11192E';
+const lightBackground = '#fff';
+const lightSurface = '#F4F4F6';
 
+// ===== Tema dinámico =====
 export const Colors = {
   light: {
     text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
+    textSecondary: '#444',
+    textMuted: '#666',
+    background: lightBackground,
+    surface: lightSurface,
+    tint: primaryBlue,
+    border: primaryBlue,
     icon: '#687076',
     tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
+    tabIconSelected: primaryBlue,
+    header: '#E5E7EB',
   },
   dark: {
     text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
+    textSecondary: '#ccc',
+    textMuted: '#999',
+    background: darkBackground,
+    surface: darkSurface,
+    tint: primaryBlue,
+    border: primaryBlue,
     icon: '#9BA1A6',
     tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
+    tabIconSelected: '#fff',
+    header: '#0B1736',
   },
 };
 
+// ===== Tipografías =====
 export const Fonts = Platform.select({
   ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
     sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
     serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
     rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
     mono: 'ui-monospace',
   },
   default: {
@@ -51,3 +62,30 @@ export const Fonts = Platform.select({
     mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
   },
 });
+
+// ===== Escalas globales =====
+export const FontSizes = {
+  xsmall: 12,
+  small: 14,
+  medium: 16,
+  large: 18,
+  xlarge: 22,
+  title: 28,
+};
+
+export const Radius = {
+  small: 6,
+  medium: 8,
+  large: 10,
+};
+
+export const Spacing = {
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 20,
+  xl: 32,
+};
+
+// ===== Helpers para usar colores según tema actual =====
+export const getThemeColors = (scheme: 'light' | 'dark' = 'dark') => Colors[scheme];
