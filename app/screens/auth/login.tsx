@@ -4,24 +4,22 @@ import { useGlobalStyles } from '@/constants/globalStyles';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
-export default function RegisterScreen() {
+export default function LoginScreen() {
   const router = useRouter();
   const gs = useGlobalStyles();
 
   const [form, setForm] = useState({
-    name: '',
     email: '',
     password: '',
-    confirmPassword: '',
   });
 
   return (
@@ -32,24 +30,16 @@ export default function RegisterScreen() {
         contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
         keyboardShouldPersistTaps="handled">
         <ThemedView style={{ alignItems: 'center', paddingHorizontal: 24 }}>
-          {/* Encabezado */}
+          {/* Título */}
           <ThemedText style={[gs.title, { marginBottom: 8 }]}>
-            Únete a la comunidad
+            Bienvenido
           </ThemedText>
           <ThemedText style={[gs.subtitle, { marginBottom: 32 }]}>
-            Crea tu cuenta y comienza a rodar 🏍️
+            Inicia sesión en tu cuenta
           </ThemedText>
 
           {/* Formulario */}
           <View style={[gs.card, { width: '100%', maxWidth: 400 }]}>
-            <TextInput
-              style={gs.input}
-              placeholder="Nombre completo"
-              placeholderTextColor="#999"
-              value={form.name}
-              onChangeText={(text) => setForm({ ...form, name: text })}
-            />
-
             <TextInput
               style={gs.input}
               placeholder="Email"
@@ -68,29 +58,27 @@ export default function RegisterScreen() {
               onChangeText={(text) => setForm({ ...form, password: text })}
             />
 
-            <TextInput
-              style={gs.input}
-              placeholder="Confirmar contraseña"
-              placeholderTextColor="#999"
-              secureTextEntry
-              value={form.confirmPassword}
-              onChangeText={(text) => setForm({ ...form, confirmPassword: text })}
-            />
-
             <TouchableOpacity
               style={[gs.primaryButton, { marginTop: 12 }]}
               activeOpacity={0.8}
               onPress={() => router.push('/(tabs)')}>
-              <Text style={gs.primaryButtonText}>Crear Cuenta</Text>
+              <Text style={gs.primaryButtonText}>Iniciar sesión</Text>
             </TouchableOpacity>
 
+            {/* Link "Olvidé mi contraseña" */}
             <Text
               style={[gs.textSecondary, { textAlign: 'center', marginTop: 16 }]}>
-              ¿Ya tienes cuenta?{' '}
+              ¿Olvidaste tu contraseña?
+            </Text>
+
+            {/* Link "Registrarse" */}
+            <Text
+              style={[gs.textSecondary, { textAlign: 'center', marginTop: 12 }]}>
+              ¿No tienes cuenta?{' '}
               <Text
                 style={{ color: '#3B5BFE', textDecorationLine: 'underline' }}
-                onPress={() => router.push('/login')}>
-                Inicia sesión
+                onPress={() => router.push('/screens/auth/register')}>
+                Regístrate
               </Text>
             </Text>
           </View>

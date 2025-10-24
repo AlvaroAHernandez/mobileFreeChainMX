@@ -54,7 +54,7 @@ export default function HomeScreen() {
         {/* === Sección: Mi Garaje === */}
         <View style={[gs.sectionHeader, { paddingHorizontal: 20 }]}>
           <ThemedText style={gs.sectionTitle}>Mi Garaje</ThemedText>
-          <TouchableOpacity onPress={() => router.push('/garage')}>
+          <TouchableOpacity onPress={() => router.push('/screens/motorcycle/garage')}>
             <ThemedText style={{ color: Colors.tint, fontSize: 13 }}>
               Ver todas &gt;
             </ThemedText>

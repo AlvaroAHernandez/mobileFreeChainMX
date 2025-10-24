@@ -63,14 +63,14 @@ export default function WalcomeScreen() {
 
       <TouchableOpacity
         style={dynamicStyles.primaryButton}
-        onPress={() => router.push('/register')}
+        onPress={() => router.push('/screens/auth/login')}
         activeOpacity={0.8}>
         <Text style={dynamicStyles.buttonText}>Comenzar ahora</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={dynamicStyles.secondaryButton}
-        onPress={() => router.push('/login')}
+        onPress={() => router.push('/screens/auth/login')}
         activeOpacity={0.8}>
         <Text style={dynamicStyles.buttonText}>Iniciar sesión</Text>
       </TouchableOpacity>
