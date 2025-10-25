@@ -105,7 +105,8 @@ export default function HomeScreen() {
             </ThemedText>
           </View>
 
-          <View
+         <TouchableOpacity
+            onPress={() => router.push('/screens/health/health')}
             style={[
               gs.card,
               {
@@ -121,7 +122,7 @@ export default function HomeScreen() {
             <ThemedText style={[gs.textSecondary, { marginTop: 4 }]}>
               Info Médica
             </ThemedText>
-          </View>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </ThemedView>

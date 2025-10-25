@@ -84,42 +84,42 @@ export default function HealthScreen() {
           {editingInfo && (
             <View>
               <TextInput
-                placeholder="Blood Type (A+, O-, ...)"
+                placeholder="Tipo de sangre Type (A+, O-, ...)"
                 placeholderTextColor={Colors.textSecondary}
                 value={tempClinicalInfo.bloodType}
                 onChangeText={(t) => setTempClinicalInfo({ ...tempClinicalInfo, bloodType: t })}
                 style={[gs.input, { color: Colors.text }]}
               />
               <TextInput
-                placeholder="Insurance Company"
+                placeholder="Aseguradora"
                 placeholderTextColor={Colors.textSecondary}
                 value={tempClinicalInfo.insurer}
                 onChangeText={(t) => setTempClinicalInfo({ ...tempClinicalInfo, insurer: t })}
                 style={[gs.input, { color: Colors.text }]}
               />
               <TextInput
-                placeholder="Policy Number"
+                placeholder="Numero de poliza"
                 placeholderTextColor={Colors.textSecondary}
                 value={tempClinicalInfo.policyNumber}
                 onChangeText={(t) => setTempClinicalInfo({ ...tempClinicalInfo, policyNumber: t })}
                 style={[gs.input, { color: Colors.text }]}
               />
               <TextInput
-                placeholder="Allergies"
+                placeholder="Alergias"
                 placeholderTextColor={Colors.textSecondary}
                 value={tempClinicalInfo.allergies}
                 onChangeText={(t) => setTempClinicalInfo({ ...tempClinicalInfo, allergies: t })}
                 style={[gs.input, { color: Colors.text }]}
               />
               <TextInput
-                placeholder="Medications"
+                placeholder="Medicamentos"
                 placeholderTextColor={Colors.textSecondary}
                 value={tempClinicalInfo.medications}
                 onChangeText={(t) => setTempClinicalInfo({ ...tempClinicalInfo, medications: t })}
                 style={[gs.input, { color: Colors.text }]}
               />
               <TextInput
-                placeholder="Medical Conditions"
+                placeholder="Condiciones medicas"
                 placeholderTextColor={Colors.textSecondary}
                 value={tempClinicalInfo.conditions}
                 onChangeText={(t) => setTempClinicalInfo({ ...tempClinicalInfo, conditions: t })}
