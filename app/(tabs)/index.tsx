@@ -87,7 +87,8 @@ export default function HomeScreen() {
             marginTop: 24,
             paddingHorizontal: 20,
           }}>
-          <View
+          <TouchableOpacity
+            onPress={() => router.push('/screens/security/security')}
             style={[
               gs.card,
               {
@@ -103,8 +104,8 @@ export default function HomeScreen() {
             <ThemedText style={[gs.textSecondary, { marginTop: 4 }]}>
               Alertas y Ubicación
             </ThemedText>
-          </View>
-
+          </TouchableOpacity>
+          
          <TouchableOpacity
             onPress={() => router.push('/screens/health/health')}
             style={[
