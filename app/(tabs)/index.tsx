@@ -4,7 +4,7 @@ import { useGlobalStyles } from '@/constants/globalStyles';
 import { getThemeColors } from '@/constants/theme';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { ScrollView, Text, TouchableOpacity, useColorScheme, View } from 'react-native';
+import { ScrollView, TouchableOpacity, useColorScheme, View } from 'react-native';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -12,11 +12,31 @@ export default function HomeScreen() {
   const scheme = useColorScheme() || 'dark';
   const Colors = getThemeColors(scheme);
 
+  // 🔧 Motos de ejemplo (pueden venir luego de una BD)
+  const motos = [
+    {
+      marca: 'Harley-Davidson',
+      modelo: 'Street 750',
+      anio: '2022',
+      matricula: 'ABCS1234',
+      color: 'Negro',
+      cilindrada: '750cc',
+    },
+    {
+      marca: 'Ducati',
+      modelo: 'Monster',
+      anio: '2020',
+      matricula: 'XYZ123',
+      color: 'Rojo',
+      cilindrada: '900cc',
+    },
+  ];
+
   return (
     <ThemedView style={gs.screen}>
       <ScrollView contentContainerStyle={gs.scrollContent}>
         {/* Header */}
-        <View style={[gs.header]}>
+        <View style={gs.header}>
           <ThemedText style={gs.headerTitle}>FREE CHAIN MX</ThemedText>
         </View>
 
@@ -30,29 +50,12 @@ export default function HomeScreen() {
           </ThemedText>
         </View>
 
-        {/* === Sección: Mis Motoclubs === */}
-        <View style={[gs.sectionHeader, { paddingHorizontal: 20 }]}>
-          <ThemedText style={gs.sectionTitle}>Mis Motoclubs</ThemedText>
-          <TouchableOpacity
-            style={[gs.primaryButton, { paddingVertical: 6, paddingHorizontal: 14 }]}>
-            <Text style={gs.primaryButtonText}>Crear</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={[gs.card, { marginHorizontal: 20 }]}>
-          <ThemedText style={[gs.textPrimary, { fontWeight: '600', fontSize: 16 }]}>
-            Riders del Valle
-          </ThemedText>
-          <ThemedText style={[gs.textSecondary, { marginTop: 6 }]}>
-            Club de motociclistas apasionados por las rutas de montaña y la aventura.
-          </ThemedText>
-          <ThemedText style={[gs.textMuted, { marginTop: 6 }]}>
-            El Valle BCS • 19 miembros
-          </ThemedText>
-        </View>
-
-        {/* === Sección: Mi Garaje === */}
-        <View style={[gs.sectionHeader, { paddingHorizontal: 20 }]}>
+        {/* Sección: Mi Garaje */}
+        <View
+          style={[
+            gs.sectionHeader,
+            { paddingHorizontal: 20, marginTop: 20, justifyContent: 'space-between' },
+          ]}>
           <ThemedText style={gs.sectionTitle}>Mi Garaje</ThemedText>
           <TouchableOpacity onPress={() => router.push('/garage')}>
             <ThemedText style={{ color: Colors.tint, fontSize: 13 }}>
@@ -61,25 +64,31 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
 
-        <View style={[gs.card, { marginHorizontal: 20 }]}>
-          <ThemedText style={[gs.textPrimary, { fontWeight: '600', fontSize: 16 }]}>
-            Ducati Monster
-          </ThemedText>
-          <ThemedText style={[gs.textMuted, { marginTop: 4 }]}>
-            Año 2020 • 1234ABC
-          </ThemedText>
+        {/* Tarjetas de motos */}
+        <View style={{ marginTop: 10, paddingHorizontal: 20 }}>
+          {motos.map((moto, index) => (
+            <TouchableOpacity
+              key={index}
+              activeOpacity={0.8}
+              onPress={() =>
+                router.push({
+                  pathname: '/motoDetails',
+                  params: { ...moto },
+                })
+              }
+              style={[gs.card, { marginBottom: 16 }]}>
+              <ThemedText
+                style={[gs.textPrimary, { fontWeight: '600', fontSize: 16 }]}>
+                {moto.marca} {moto.modelo}
+              </ThemedText>
+              <ThemedText style={[gs.textSecondary, { marginTop: 6 }]}>
+                Año {moto.anio} • {moto.matricula}
+              </ThemedText>
+            </TouchableOpacity>
+          ))}
         </View>
 
-        <View style={[gs.card, { marginHorizontal: 20 }]}>
-          <ThemedText style={[gs.textPrimary, { fontWeight: '600', fontSize: 16 }]}>
-            Harley-Davidson Low Rider S
-          </ThemedText>
-          <ThemedText style={[gs.textMuted, { marginTop: 4 }]}>
-            Año 2020 • 5678XYZ
-          </ThemedText>
-        </View>
-
-        {/* === Sección: Accesos rápidos === */}
+        {/* Accesos rápidos */}
         <View
           style={{
             flexDirection: 'row',
@@ -97,7 +106,8 @@ export default function HomeScreen() {
                 backgroundColor: Colors.surface,
               },
             ]}>
-            <ThemedText style={[gs.textPrimary, { fontWeight: '600', fontSize: 16 }]}>
+            <ThemedText
+              style={[gs.textPrimary, { fontWeight: '600', fontSize: 16 }]}>
               Seguridad
             </ThemedText>
             <ThemedText style={[gs.textSecondary, { marginTop: 4 }]}>
@@ -115,7 +125,8 @@ export default function HomeScreen() {
                 backgroundColor: Colors.surface,
               },
             ]}>
-            <ThemedText style={[gs.textPrimary, { fontWeight: '600', fontSize: 16 }]}>
+            <ThemedText
+              style={[gs.textPrimary, { fontWeight: '600', fontSize: 16 }]}>
               Salud
             </ThemedText>
             <ThemedText style={[gs.textSecondary, { marginTop: 4 }]}>
