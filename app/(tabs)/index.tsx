@@ -12,7 +12,7 @@ export default function HomeScreen() {
   const scheme = useColorScheme() || 'dark';
   const Colors = getThemeColors(scheme);
 
-  // 🔧 Motos de ejemplo (pueden venir luego de una BD)
+  //  Motos de ejemplo (pueden venir luego de una BD)
   const motos = [
     {
       marca: 'Harley-Davidson',
