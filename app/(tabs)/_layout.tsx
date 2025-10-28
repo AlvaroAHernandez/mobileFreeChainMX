@@ -11,15 +11,15 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
+        headerShown: false,
         tabBarActiveTintColor: Colors.tint,
         tabBarInactiveTintColor: Colors.textMuted,
         tabBarStyle: {
           backgroundColor: Colors.surface,
           borderTopWidth: 0,
-          paddingBottom: 6,
           height: 60,
+          paddingBottom: 8,
         },
-        headerShown: false,
       }}
     >
       <Tabs.Screen
@@ -32,7 +32,7 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="club"
+        name="club/explore"
         options={{
           title: 'Club',
           tabBarIcon: ({ color, size }) => (
@@ -41,7 +41,7 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="events"
+        name="events/events"
         options={{
           title: 'Eventos',
           tabBarIcon: ({ color, size }) => (
@@ -50,7 +50,7 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="routes"
+        name="routes/routes"
         options={{
           title: 'Rutas',
           tabBarIcon: ({ color, size }) => (
@@ -59,7 +59,7 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="chat"
+        name="chat/chat"
         options={{
           title: 'Chat',
           tabBarIcon: ({ color, size }) => (
