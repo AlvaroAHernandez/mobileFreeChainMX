@@ -57,7 +57,7 @@ export default function HomeScreen() {
             { paddingHorizontal: 20, marginTop: 20, justifyContent: 'space-between' },
           ]}>
           <ThemedText style={gs.sectionTitle}>Mi Garaje</ThemedText>
-          <TouchableOpacity onPress={() => router.push('/garage')}>
+          <TouchableOpacity onPress={() => router.push('/screens/motorcycle/garage')}>
             <ThemedText style={{ color: Colors.tint, fontSize: 13 }}>
               Ver todas &gt;
             </ThemedText>
@@ -96,7 +96,8 @@ export default function HomeScreen() {
             marginTop: 24,
             paddingHorizontal: 20,
           }}>
-          <View
+          <TouchableOpacity
+            onPress={() => router.push('/screens/security/security')}
             style={[
               gs.card,
               {
@@ -113,9 +114,10 @@ export default function HomeScreen() {
             <ThemedText style={[gs.textSecondary, { marginTop: 4 }]}>
               Alertas y Ubicación
             </ThemedText>
-          </View>
-
-          <View
+          </TouchableOpacity>
+          
+         <TouchableOpacity
+            onPress={() => router.push('/screens/health/health')}
             style={[
               gs.card,
               {
@@ -132,7 +134,7 @@ export default function HomeScreen() {
             <ThemedText style={[gs.textSecondary, { marginTop: 4 }]}>
               Info Médica
             </ThemedText>
-          </View>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </ThemedView>

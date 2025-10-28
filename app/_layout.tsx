@@ -15,7 +15,7 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         {/* Esta será la primera pantalla visible */}
-        <Stack.Screen name="walcome" options={{ headerShown: false }} />
+        <Stack.Screen name="welcome" options={{ headerShown: false }} />
 
         {/* Luego tu navegación con pestañas */}
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
