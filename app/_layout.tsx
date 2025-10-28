@@ -1,31 +1,75 @@
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+import CustomDrawerContent from '@/components/CustomDrawerContent';
+import { getThemeColors } from '@/constants/theme';
+import { Ionicons } from '@expo/vector-icons';
+import { Drawer } from 'expo-router/drawer';
+import React from 'react';
+import { I18nManager, useColorScheme } from 'react-native';
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const scheme = useColorScheme() || 'dark';
+  const Colors = getThemeColors(scheme);
+
+
+  I18nManager.allowRTL(false);
+  I18nManager.forceRTL(false);
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        {/* Esta será la primera pantalla visible */}
-        <Stack.Screen name="welcome" options={{ headerShown: false }} />
+    <Drawer
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
+     
+      screenOptions={{
+        drawerPosition: 'right', // ✅ forzamos izquierda
+        drawerType: 'front',
+        drawerStyle: {
+          backgroundColor: Colors.surface,
+          width: 260,
+        },
+        headerShown: false,
+        drawerActiveTintColor: Colors.tint,
+        drawerInactiveTintColor: Colors.textMuted,
+        overlayColor: 'rgba(0, 0, 0, 0.4)',
+        sceneContainerStyle: { backgroundColor: Colors.background },
+      }}
+    >
+      <Drawer.Screen
+        name="(tabs)"
+        options={{
+          title: 'Inicio',
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name="home-outline" color={color} size={size} />
+          ),
+        }}
+      />
 
-        {/* Luego tu navegación con pestañas */}
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Drawer.Screen
+        name="screens/motorcycle/garage"
+        options={{
+          title: 'Garaje',
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name="bicycle-outline" color={color} size={size} />
+          ),
+        }}
+      />
 
-        {/* Pantalla modal*/}
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
+      <Drawer.Screen
+        name="screens/health/health"
+        options={{
+          title: 'Salud',
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name="heart-outline" color={color} size={size} />
+          ),
+        }}
+      />
 
-      <StatusBar style="auto" />
-    </ThemeProvider>
+      <Drawer.Screen
+        name="screens/security/security"
+        options={{
+          title: 'Seguridad',
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name="lock-closed-outline" color={color} size={size} />
+          ),
+        }}
+      />
+    </Drawer>
   );
 }
-

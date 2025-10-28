@@ -25,6 +25,9 @@ export const Colors = {
     tabIconDefault: '#687076',
     tabIconSelected: primaryBlue,
     header: '#E5E7EB',
+    inputBackground: '#E5E7EB', // 👈 agregado
+    success: '#4CAF50',         // 👈 agregado
+    danger: '#D32F2F',          // 👈 agregado
   },
   dark: {
     text: '#ECEDEE',
@@ -38,9 +41,11 @@ export const Colors = {
     tabIconDefault: '#9BA1A6',
     tabIconSelected: '#fff',
     header: '#0B1736',
+    inputBackground: '#1E1E2F', // 👈 agregado
+    success: '#4CAF50',         // 👈 agregado
+    danger: '#D32F2F',          // 👈 agregado
   },
 };
-
 // ===== Tipografías =====
 export const Fonts = Platform.select({
   ios: {

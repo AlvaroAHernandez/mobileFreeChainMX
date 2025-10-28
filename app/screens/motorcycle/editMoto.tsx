@@ -7,7 +7,6 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, Text, TextInput, TouchableOpacity, useColorScheme, View } from 'react-native';
 
-// ✅ Tipo para las motos
 type Moto = {
   marca: string;
   modelo: string;
@@ -24,7 +23,6 @@ export default function EditMotoScreen() {
   const Colors = getThemeColors(scheme);
   const params = useLocalSearchParams();
 
-  // ✅ Estado con tipo explícito
   const [moto, setMoto] = useState<Moto>({
     marca: (params.marca as string) || '',
     modelo: (params.modelo as string) || '',
@@ -34,72 +32,44 @@ export default function EditMotoScreen() {
     cilindrada: (params.cilindrada as string) || '',
   });
 
-  // ✅ Función de cambio con tipo seguro
   const handleChange = (field: keyof Moto, value: string) => {
     setMoto((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSave = () => {
     Alert.alert('Cambios guardados', 'La información fue actualizada.');
+    // antes: router.replace('/motoDetails', ...) -> ahora dentro de motorcycle:
     router.replace({
-      pathname: '/motoDetails',
+      pathname: '/screens/motorcycle/motoDetails',
       params: { ...moto },
     });
   };
 
   return (
     <ThemedView style={gs.screen}>
-      {/* Header */}
       <View style={gs.header}>
         <ThemedText style={gs.headerTitle}>FREE CHAIN MX</ThemedText>
       </View>
 
-      {/* Título */}
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          marginTop: 20,
-          paddingHorizontal: 20,
-        }}>
-        <Ionicons
-          name="chevron-back"
-          size={22}
-          color={Colors.text}
-          onPress={() => router.back()}
-        />
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20, paddingHorizontal: 20 }}>
+        <Ionicons name="chevron-back" size={22} color={Colors.text} onPress={() => router.back()} />
         <View style={{ marginLeft: 6 }}>
-          <ThemedText
-            style={[gs.sectionTitle, { fontSize: 18, fontWeight: '600' }]}>
+          <ThemedText style={[gs.sectionTitle, { fontSize: 18, fontWeight: '600' }]}>
             {moto.marca} {moto.modelo}
           </ThemedText>
-          <ThemedText style={gs.textSecondary}>
-            Editar información
-          </ThemedText>
+          <ThemedText style={gs.textSecondary}>Editar información</ThemedText>
         </View>
       </View>
 
-      {/* Formulario */}
-      <View
-        style={[
-          gs.card,
-          {
-            marginHorizontal: 20,
-            marginTop: 20,
-            paddingVertical: 20,
-            alignItems: 'flex-start',
-          },
-        ]}>
-        {(
-          [
-            { label: 'Marca', key: 'marca' },
-            { label: 'Modelo', key: 'modelo' },
-            { label: 'Año', key: 'anio' },
-            { label: 'Matrícula', key: 'matricula' },
-            { label: 'Color', key: 'color' },
-            { label: 'Cilindrada', key: 'cilindrada' },
-          ] as { label: string; key: keyof Moto }[]
-        ).map((item, i) => (
+      <View style={[gs.card, { marginHorizontal: 20, marginTop: 20, paddingVertical: 20, alignItems: 'flex-start' }]}>
+        {([
+          { label: 'Marca', key: 'marca' },
+          { label: 'Modelo', key: 'modelo' },
+          { label: 'Año', key: 'anio' },
+          { label: 'Matrícula', key: 'matricula' },
+          { label: 'Color', key: 'color' },
+          { label: 'Cilindrada', key: 'cilindrada' },
+        ] as { label: string; key: keyof Moto }[]).map((item, i) => (
           <View key={i} style={{ marginBottom: 12, width: '100%' }}>
             <ThemedText style={gs.textSecondary}>{item.label}</ThemedText>
             <TextInput
@@ -118,21 +88,11 @@ export default function EditMotoScreen() {
           </View>
         ))}
 
-        {/* Botones */}
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            width: '100%',
-            marginTop: 10,
-          }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', marginTop: 10 }}>
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={handleSave}
-            style={[
-              gs.primaryButton,
-              { paddingHorizontal: 20, paddingVertical: 8 },
-            ]}>
+            style={[gs.primaryButton, { paddingHorizontal: 20, paddingVertical: 8 }]}>
             <Text style={gs.primaryButtonText}>Guardar Cambios</Text>
           </TouchableOpacity>
 

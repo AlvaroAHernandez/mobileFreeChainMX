@@ -2,17 +2,18 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useGlobalStyles } from '@/constants/globalStyles';
 import { getThemeColors } from '@/constants/theme';
-import { useRouter } from 'expo-router';
-import React from 'react';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useCallback, useRef, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, useColorScheme, View } from 'react-native';
 
 export default function GarageScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
   const gs = useGlobalStyles();
   const scheme = useColorScheme() || 'dark';
   const Colors = getThemeColors(scheme);
 
-  const motos = [
+  const [motos, setMotos] = useState([
     {
       marca: 'Harley-Davidson',
       modelo: 'Street 750',
@@ -29,7 +30,20 @@ export default function GarageScreen() {
       color: 'Rojo',
       cilindrada: '900cc',
     },
-  ];
+  ]);
+
+  // Evita que la misma moto se agregue múltiples veces
+  const motoAgregada = useRef(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (params?.nuevaMoto && !motoAgregada.current) {
+        const nuevaMoto = JSON.parse(params.nuevaMoto as string);
+        setMotos((prev) => [...prev, nuevaMoto]);
+        motoAgregada.current = true; // marcar como agregada
+      }
+    }, [params])
+  );
 
   return (
     <ThemedView style={gs.screen}>
@@ -39,7 +53,7 @@ export default function GarageScreen() {
           <ThemedText style={gs.headerTitle}>FREE CHAIN MX</ThemedText>
         </View>
 
-        {/* Título */}
+        {/* Título y botón agregar */}
         <View
           style={{
             flexDirection: 'row',
@@ -49,26 +63,22 @@ export default function GarageScreen() {
             marginTop: 20,
           }}>
           <View>
-            <ThemedText style={[gs.sectionTitle, { fontSize: 20 }]}>
-              Mi Garaje
-            </ThemedText>
-            <ThemedText style={gs.textSecondary}>
-              Gestiona tus Motocicletas
-            </ThemedText>
+            <ThemedText style={[gs.sectionTitle, { fontSize: 20 }]}>Mi Garaje</ThemedText>
+            <ThemedText style={gs.textSecondary}>Gestiona tus Motocicletas</ThemedText>
           </View>
 
           <TouchableOpacity
             activeOpacity={0.8}
-            style={[
-              gs.primaryButton,
-              { paddingHorizontal: 14, paddingVertical: 6 },
-            ]}
-            onPress={() => console.log('Agregar moto')}>
+            style={[gs.primaryButton, { paddingHorizontal: 14, paddingVertical: 6 }]}
+            onPress={() => {
+              motoAgregada.current = false; // reset para permitir agregar otra moto
+              router.push('/screens/motorcycle/addMoto');
+            }}>
             <Text style={gs.primaryButtonText}>Agregar Moto</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Tarjetas */}
+        {/* Lista de motos */}
         <View style={{ marginTop: 20, paddingHorizontal: 20 }}>
           {motos.map((moto, index) => (
             <TouchableOpacity
@@ -76,13 +86,12 @@ export default function GarageScreen() {
               activeOpacity={0.8}
               onPress={() =>
                 router.push({
-                  pathname: '/motoDetails',
+                  pathname: '/screens/motorcycle/motoDetails',
                   params: { ...moto },
                 })
               }
               style={[gs.card, { marginBottom: 16 }]}>
-              <ThemedText
-                style={[gs.textPrimary, { fontSize: 16, fontWeight: '600' }]}>
+              <ThemedText style={[gs.textPrimary, { fontSize: 16, fontWeight: '600' }]}>
                 {moto.marca} {moto.modelo}
               </ThemedText>
               <ThemedText style={gs.textSecondary}>

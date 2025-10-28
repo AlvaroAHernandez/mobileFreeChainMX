@@ -1,105 +1,69 @@
+import { getThemeColors } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { useColorScheme, useWindowDimensions } from 'react-native';
+import { useColorScheme } from 'react-native';
 
-// Función para escalar tamaño del icono
-const scaleIcon = (size: number, width: number) => (width / 375) * size;
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
-  const { width } = useWindowDimensions();
+export default function TabsLayout() {
+  const scheme = useColorScheme() || 'dark';
+  const Colors = getThemeColors(scheme);
 
   return (
     <Tabs
       screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: '#3B5BFE',
-        tabBarInactiveTintColor: '#ccc',
+        tabBarActiveTintColor: Colors.tint,
+        tabBarInactiveTintColor: Colors.textMuted,
         tabBarStyle: {
-          backgroundColor: '#0A0B0F',
+          backgroundColor: Colors.surface,
           borderTopWidth: 0,
-          height: width < 400 ? 60 : 70,
-          paddingBottom: width < 400 ? 8 : 12,
-          paddingTop: width < 400 ? 4 : 8,
+          paddingBottom: 6,
+          height: 60,
         },
-        tabBarLabelStyle: {
-          fontSize: width < 400 ? 11 : 13,
-          fontWeight: '500',
-        },
+        headerShown: false,
       }}
     >
-      {/*  Inicio */}
       <Tabs.Screen
         name="index"
         options={{
           title: 'Inicio',
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? 'home' : 'home-outline'}
-              color={color}
-              size={scaleIcon(22, width)}
-            />
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home-outline" size={size} color={color} />
           ),
         }}
       />
-
-      {/*  Club */}
       <Tabs.Screen
         name="club"
         options={{
           title: 'Club',
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? 'people' : 'people-outline'}
-              color={color}
-              size={scaleIcon(22, width)}
-            />
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="people-outline" size={size} color={color} />
           ),
         }}
       />
-
-      {/* Eventos */}
       <Tabs.Screen
-        name="eventos"
+        name="events"
         options={{
           title: 'Eventos',
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? 'calendar' : 'calendar-outline'}
-              color={color}
-              size={scaleIcon(22, width)}
-            />
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="calendar-outline" size={size} color={color} />
           ),
         }}
       />
-
-      {/*  Rutas */}
       <Tabs.Screen
-        name="rutas"
+        name="routes"
         options={{
           title: 'Rutas',
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? 'map' : 'map-outline'}
-              color={color}
-              size={scaleIcon(22, width)}
-            />
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="map-outline" size={size} color={color} />
           ),
         }}
       />
-
-      {/*  Chat */}
       <Tabs.Screen
         name="chat"
         options={{
           title: 'Chat',
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? 'chatbubbles' : 'chatbubbles-outline'}
-              color={color}
-              size={scaleIcon(22, width)}
-            />
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="chatbubbles-outline" size={size} color={color} />
           ),
         }}
       />

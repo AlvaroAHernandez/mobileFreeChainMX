@@ -26,57 +26,25 @@ export default function MotoDetailsScreen() {
   const handleDelete = () => {
     Alert.alert('Eliminar Moto', '¿Seguro que quieres eliminar esta moto?', [
       { text: 'Cancelar', style: 'cancel' },
-      {
-        text: 'Eliminar',
-        style: 'destructive',
-        onPress: () => router.back(),
-      },
+      { text: 'Eliminar', style: 'destructive', onPress: () => router.back() },
     ]);
   };
 
   return (
     <ThemedView style={gs.screen}>
-      {/* Header */}
       <View style={gs.header}>
         <ThemedText style={gs.headerTitle}>FREE CHAIN MX</ThemedText>
       </View>
 
-      {/* Título */}
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          marginTop: 20,
-          paddingHorizontal: 20,
-        }}>
-        <Ionicons
-          name="chevron-back"
-          size={22}
-          color={Colors.text}
-          onPress={() => router.back()}
-        />
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20, paddingHorizontal: 20 }}>
+        <Ionicons name="chevron-back" size={22} color={Colors.text} onPress={() => router.back()} />
         <View style={{ marginLeft: 6 }}>
-          <ThemedText
-            style={[gs.sectionTitle, { fontSize: 18, fontWeight: '600' }]}>
-            {marca} {modelo}
-          </ThemedText>
-          <ThemedText style={gs.textSecondary}>
-            Detalles de tu Motocicleta
-          </ThemedText>
+          <ThemedText style={[gs.sectionTitle, { fontSize: 18, fontWeight: '600' }]}>{marca} {modelo}</ThemedText>
+          <ThemedText style={gs.textSecondary}>Detalles de tu Motocicleta</ThemedText>
         </View>
       </View>
 
-      {/* Tarjeta */}
-      <View
-        style={[
-          gs.card,
-          {
-            marginHorizontal: 20,
-            marginTop: 20,
-            paddingVertical: 16,
-            alignItems: 'flex-start',
-          },
-        ]}>
+      <View style={[gs.card, { marginHorizontal: 20, marginTop: 20, paddingVertical: 16, alignItems: 'flex-start' }]}>
         <ThemedText style={gs.textSecondary}>Marca</ThemedText>
         <ThemedText style={gs.textPrimary}>{marca}</ThemedText>
 
@@ -92,34 +60,23 @@ export default function MotoDetailsScreen() {
         <ThemedText style={[gs.textSecondary, { marginTop: 10 }]}>Color</ThemedText>
         <ThemedText style={gs.textPrimary}>{color}</ThemedText>
 
-        <ThemedText style={[gs.textSecondary, { marginTop: 10 }]}>
-          Cilindrada
-        </ThemedText>
+        <ThemedText style={[gs.textSecondary, { marginTop: 10 }]}>Cilindrada</ThemedText>
         <ThemedText style={gs.textPrimary}>{cilindrada}</ThemedText>
 
-        {/* Botón Editar */}
+        {/* EDITAR: ahora va a /screens/motorcycle/editMoto */}
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={() =>
             router.push({
-              pathname: '/editMoto',
+              pathname: '/screens/motorcycle/editMoto',
               params: { marca, modelo, anio, matricula, color, cilindrada },
             })
           }
-          style={[
-            gs.primaryButton,
-            {
-              paddingHorizontal: 20,
-              paddingVertical: 6,
-              borderRadius: 6,
-              marginTop: 14,
-            },
-          ]}>
+          style={[gs.primaryButton, { paddingHorizontal: 20, paddingVertical: 6, borderRadius: 6, marginTop: 14 }]}>
           <Text style={gs.primaryButtonText}>Editar</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Botón eliminar */}
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={handleDelete}
@@ -131,9 +88,7 @@ export default function MotoDetailsScreen() {
           borderRadius: 8,
           alignItems: 'center',
         }}>
-        <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>
-          Eliminar Moto
-        </Text>
+        <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>Eliminar Moto</Text>
       </TouchableOpacity>
     </ThemedView>
   );
