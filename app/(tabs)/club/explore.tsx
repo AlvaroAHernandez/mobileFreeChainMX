@@ -99,7 +99,7 @@ export default function ClubExploreScreen() {
               <TouchableOpacity
                 key={club.id}
                 style={[gs.card, { marginTop: 15 }]}
-                onPress={() => router.push(`/screens/club/clubDetail`)}
+                onPress={() => router.push(`/screens/club/clubDetail?id=${club.id}`)}
               >
                 <ThemedText style={[gs.textPrimary, { fontWeight: '600', fontSize: 16 }]}>
                   {club.name}
