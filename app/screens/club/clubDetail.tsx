@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { ScrollView, TouchableOpacity, useColorScheme, View } from 'react-native';
 
 const MOCK_CLUBS = [
-  { id: '1', name: 'Riders del Valle', description: 'Club de motociclistas apasionados por las rutas de montaña y la aventura.', location: 'Ciudad de México', members: 15 },
+  { id: '1', name: 'Riders del Vallessss', description: 'Club de motociclistas apasionados por las rutas de montaña y la aventura.', location: 'Ciudad de México', members: 15 },
   { id: '2', name: 'Águilas del Asfalto', description: 'Comunidad de riders urbanos y touring.', location: 'Guadalajara', members: 22 },
   { id: '3', name: 'Lobos de Carretera', description: 'Para los amantes de las largas distancias y el touring.', location: 'Monterrey', members: 8 },
 ];
