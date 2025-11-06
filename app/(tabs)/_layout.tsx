@@ -37,6 +37,13 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="riders/riders"
+        options={{
+          title: 'Riders',
+          tabBarIcon: ({ color, size }) => <Ionicons name="bicycle-outline" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="events/events"
         options={{
           title: 'Eventos',
