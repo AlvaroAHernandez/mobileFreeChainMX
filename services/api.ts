@@ -1,4 +1,5 @@
-import { getToken } from "@/utils/storage";
+import { navigate } from "@/utils/navigation";
+import { clearAuthData, getToken } from "@/utils/storage";
 import axios from "axios";
 
 const api = axios.create({
@@ -6,7 +7,7 @@ const api = axios.create({
   timeout: 10000,
 });
 
-// Interceptor para agregar token a las peticiones
+// 🔹 Interceptor para agregar token
 api.interceptors.request.use(
   async (config) => {
     const token = await getToken();
@@ -15,20 +16,18 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Interceptor para manejar respuestas no autorizadas
+// 🔹 Interceptor para manejar respuestas 401
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     if (error.response?.status === 401) {
-      import('@/utils/storage').then(({ clearAuthData }) => {
-        clearAuthData();
-      });
+      await clearAuthData();
+      navigate("screens/auth/login");
     }
+
     return Promise.reject(error);
   }
 );

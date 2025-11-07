@@ -1,121 +1,107 @@
-// app/screens/home/Home.tsx
-import ScreenLayout from '@/components/ScreenLayout';
-import { ThemedText } from '@/components/themed-text';
-import { useGlobalStyles } from '@/constants/globalStyles';
-import { getThemeColors } from '@/constants/theme';
-import { useRouter } from 'expo-router';
-import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import HorizontalListCard from "@/components/home/HorizontalListCard";
+import SectionCard from "@/components/home/SectionCard";
+import ScreenLayout from "@/components/ScreenLayout";
+import { ThemedText } from "@/components/themed-text";
+import { CustomButton } from "@/components/ui/CustomButton";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { useGlobalStyles } from "@/constants/globalStyles";
+import { getThemeColors } from "@/constants/theme";
+import { useHomeData } from "@/hooks/useHomeData";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import React from "react";
+import { ActivityIndicator, FlatList, View } from "react-native";
 
 export default function HomeScreen() {
   const gs = useGlobalStyles();
   const router = useRouter();
-  const Colors = getThemeColors('dark');
-
-  const userName = 'UserExample';
-  const motoClubs: any[] = [];
-  const motos: any[] = [];
+  const Colors = getThemeColors("dark");
+  const { userData, motos, motoClubs, loading } = useHomeData();
 
   return (
     <ScreenLayout title="FREE CHAIN MX">
       {/* Saludo */}
-      <View style={{ marginTop: 10 }}>
-        <ThemedText style={[gs.textPrimary, { fontSize: 20, fontWeight: '600' }]}>
-          Hola, {userName}
+      <View style={{ marginTop: 6, marginBottom: 4 }}>
+        <ThemedText
+          style={[gs.textPrimary, { fontSize: 20, fontWeight: "600" }]}
+        >
+          Hola, {userData?.name || "Motociclista"}
         </ThemedText>
         <ThemedText style={gs.textSecondary}>Bienvenido de vuelta</ThemedText>
       </View>
 
       {/* Mis MotoClubs */}
-      <View style={{ marginTop: 24 }}>
-        <ThemedText style={[gs.sectionTitle, { fontSize: 18 }]}>Mis MotoClubs</ThemedText>
-        {motoClubs.length === 0 ? (
-          <View
-            style={[
-              gs.card,
-              {
-                backgroundColor: Colors.surface,
-                marginTop: 10,
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: 20,
-              },
-            ]}
-          >
-            <ThemedText style={gs.textSecondary}>
-              No eres miembro de ningún motoclub
-            </ThemedText>
-            <TouchableOpacity
-              style={[gs.primaryButton, { marginTop: 10 }]}
-              onPress={() => router.push('/club/explore')}
-            >
-              <Text style={gs.primaryButtonText}>Explorar MotoClubs</Text>
-            </TouchableOpacity>
-          </View>
+      <SectionCard>
+        <SectionHeader
+          title="Mis MotoClubs"
+          subtitle="Los clubes donde ruedas"
+          onPressMore={() => router.push("/club/explore")}
+        />
+        {loading ? (
+          <ActivityIndicator color={Colors.primary} />
+        ) : motoClubs.length === 0 ? (
+          <EmptyState message="No eres miembro de ningún motoclub" />
         ) : (
-          <ThemedText style={gs.textSecondary}>[Mostrar lista de clubes aquí]</ThemedText>
+          <FlatList
+            data={motoClubs}
+            horizontal
+            keyExtractor={(item) => item.id.toString()}
+            showsHorizontalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <HorizontalListCard
+                item={item}
+                type="club"
+                onPress={() =>
+                  router.push(`/screens/club/detail?id=${item.id}`)
+                }
+              />
+            )}
+          />
         )}
-      </View>
+      </SectionCard>
 
       {/* Mi Garaje */}
-      <View style={{ marginTop: 30 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <ThemedText style={[gs.sectionTitle, { fontSize: 18 }]}>Mi Garaje</ThemedText>
-          <TouchableOpacity onPress={() => router.push('/screens/motorcycle/garage')}>
-            <ThemedText style={[gs.textSecondary, { fontSize: 14 }]}>Ver todas {'>'}</ThemedText>
-          </TouchableOpacity>
-        </View>
+      <SectionCard>
+        <SectionHeader
+          title="Mi Garaje"
+          subtitle="Tus motocicletas registradas"
+          onPressMore={() => router.push("/screens/motorcycle/garage")}
+        />
 
-        {motos.length === 0 ? (
-          <View
-            style={[
-              gs.card,
-              {
-                backgroundColor: Colors.surface,
-                marginTop: 10,
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: 20,
-              },
-            ]}
-          >
-            <ThemedText style={gs.textSecondary}>No has registrado ninguna moto</ThemedText>
-            <TouchableOpacity
-              style={[gs.primaryButton, { marginTop: 10 }]}
-              onPress={() => router.push('/screens/motorcycle/addMoto')}
-            >
-              <Text style={gs.primaryButtonText}>Agregar Moto</Text>
-            </TouchableOpacity>
-          </View>
+        {loading ? (
+          <ActivityIndicator color={Colors.primary} />
+        ) : motos.length === 0 ? (
+          <EmptyState
+            message="No has registrado ninguna moto"
+            icon="bicycle-outline"
+          />
         ) : (
-          <ThemedText style={gs.textSecondary}>[Mostrar lista de motos aquí]</ThemedText>
+          <FlatList
+            data={motos}
+            horizontal
+            keyExtractor={(item) => item.id.toString()}
+            showsHorizontalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <HorizontalListCard
+                item={item}
+                type="moto"
+                onPress={() =>
+                  router.push(`/screens/motorcycle/detail?id=${item.id}`)
+                }
+              />
+            )}
+          />
         )}
-      </View>
 
-      {/* Atajos: Seguridad y Salud */}
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 30 }}>
-        <TouchableOpacity
-          style={[
-            gs.card,
-            { flex: 1, backgroundColor: Colors.surface, alignItems: 'center', padding: 20, marginRight: 8 },
-          ]}
-          onPress={() => router.push('/screens/security/security')}
-        >
-          <ThemedText style={gs.textPrimary}>Seguridad</ThemedText>
-          <ThemedText style={gs.textSecondary}>Alertas y Ubicación</ThemedText>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[
-            gs.card,
-            { flex: 1, backgroundColor: Colors.surface, alignItems: 'center', padding: 20, marginLeft: 8 },
-          ]}
-          onPress={() => router.push('/screens/health/health')}
-        >
-          <ThemedText style={gs.textPrimary}>Salud</ThemedText>
-          <ThemedText style={gs.textSecondary}>Info Médica</ThemedText>
-        </TouchableOpacity>
-      </View>
+        {/* Agregar moto */}
+        <CustomButton
+          title="Agregar nueva moto"
+          icon={<Ionicons name="add-circle-outline" size={20} color="#fff" />}
+          onPress={() => router.push("/screens/motorcycle/AddEditMotoScreen")}
+          style={{ marginTop: 16 }}
+        />
+      </SectionCard>
 
       <View style={{ height: 60 }} />
     </ScreenLayout>

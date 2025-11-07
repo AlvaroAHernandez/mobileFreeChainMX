@@ -1,27 +1,14 @@
-import { useAuth } from '@/hooks/useAuth';
-import { Slot, useRouter } from 'expo-router';
-import { useEffect } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { navigationRef } from "@/utils/navigation";
+import { Slot, useNavigationContainerRef } from "expo-router";
+import { useEffect } from "react";
 
 export default function RootLayout() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
+  const ref = useNavigationContainerRef();
 
+  // sincronizamos con nuestra ref global
   useEffect(() => {
-    if (!loading) {
-      if (!user) {
-        router.replace('/screens/auth/login');
-      }
-    }
-  }, [loading, user, router]);
-
-  if (loading) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+    Object.assign(navigationRef, ref);
+  }, [ref]);
 
   return <Slot />;
 }
