@@ -30,10 +30,12 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="club/club"
+        name="club"
         options={{
-          title: 'Club',
-          tabBarIcon: ({ color, size }) => <Ionicons name="people-outline" size={size} color={color} />,
+          title: 'Clubs',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="people-outline" size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
@@ -44,7 +46,7 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="events/events"
+        name="events"
         options={{
           title: 'Eventos',
           tabBarIcon: ({ color, size }) => <Ionicons name="calendar-outline" size={size} color={color} />,

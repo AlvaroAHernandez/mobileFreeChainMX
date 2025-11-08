@@ -28,5 +28,5 @@ export const useHomeData = () => {
   const motos = userData?.motorcycles || [];
   const motoClubs = userData?.organizations || [];
 
-  return { userData, motos, motoClubs, loading, refresh: fetchUserData };
+  return { userData, motos, motoClubs, loading, refetch: fetchUserData };
 };

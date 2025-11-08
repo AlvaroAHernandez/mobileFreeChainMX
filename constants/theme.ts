@@ -2,68 +2,71 @@
  * Combina modo claro/oscuro + tipografía por plataforma + escalas reutilizables
  */
 
-import { Platform } from 'react-native';
+import { Platform } from "react-native";
 
 // ===== Colores principales =====
-const primaryBlue = '#3B5BFE';
-const darkBackground = '#000';
-const darkSurface = '#11192E';
-const lightBackground = '#fff';
-const lightSurface = '#F4F4F6';
+const primaryBlue = "#3B5BFE";
+const darkBackground = "#000";
+const darkSurface = "#11192E";
+const lightBackground = "#fff";
+const lightSurface = "#F4F4F6";
 
 // ===== Tema dinámico =====
 export const Colors = {
   light: {
-    text: '#11181C',
-    textSecondary: '#444',
-    textMuted: '#666',
+    text: "#11181C",
+    textSecondary: "#444",
+    textMuted: "#666",
     background: lightBackground,
     surface: lightSurface,
     tint: primaryBlue,
+    primary: primaryBlue, // ← AGREGAR ESTA LÍNEA
     border: primaryBlue,
-    icon: '#687076',
-    tabIconDefault: '#687076',
+    icon: "#687076",
+    tabIconDefault: "#687076",
     tabIconSelected: primaryBlue,
-    header: '#E5E7EB',
-    inputBackground: '#E5E7EB', // 👈 agregado
-    success: '#4CAF50',         // 👈 agregado
-    danger: '#D32F2F',          // 👈 agregado
+    header: "#E5E7EB",
+    inputBackground: "#E5E7EB",
+    success: "#4CAF50",
+    danger: "#D32F2F",
   },
   dark: {
-    text: '#ECEDEE',
-    textSecondary: '#ccc',
-    textMuted: '#999',
+    text: "#ECEDEE",
+    textSecondary: "#ccc",
+    textMuted: "#999",
     background: darkBackground,
     surface: darkSurface,
     tint: primaryBlue,
+    primary: primaryBlue, // ← AGREGAR ESTA LÍNEA
     border: primaryBlue,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: '#fff',
-    header: '#0B1736',
-    inputBackground: '#1E1E2F', // 👈 agregado
-    success: '#4CAF50',         // 👈 agregado
-    danger: '#D32F2F',          // 👈 agregado
+    icon: "#9BA1A6",
+    tabIconDefault: "#9BA1A6",
+    tabIconSelected: "#fff",
+    header: "#0B1736",
+    inputBackground: "#1E1E2F",
+    success: "#4CAF50",
+    danger: "#D32F2F",
   },
 };
 // ===== Tipografías =====
 export const Fonts = Platform.select({
   ios: {
-    sans: 'system-ui',
-    serif: 'ui-serif',
-    rounded: 'ui-rounded',
-    mono: 'ui-monospace',
+    sans: "system-ui",
+    serif: "ui-serif",
+    rounded: "ui-rounded",
+    mono: "ui-monospace",
   },
   default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
+    sans: "normal",
+    serif: "serif",
+    rounded: "normal",
+    mono: "monospace",
   },
   web: {
     sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
     serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
+    rounded:
+      "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
     mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
   },
 });
@@ -93,4 +96,5 @@ export const Spacing = {
 };
 
 // ===== Helpers para usar colores según tema actual =====
-export const getThemeColors = (scheme: 'light' | 'dark' = 'dark') => Colors[scheme];
+export const getThemeColors = (scheme: "light" | "dark" = "dark") =>
+  Colors[scheme];

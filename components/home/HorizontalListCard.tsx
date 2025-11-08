@@ -7,9 +7,8 @@ export default function HorizontalListCard({ item, onPress, type }: any) {
   const Colors = getThemeColors("dark");
   const isClub = type === "club";
 
-  // Prioriza el campo correcto según el tipo
   const imageUri = isClub
-    ? item.logo || item.photo_url
+    ? item.logo_url || item.logo || item.photo_url 
     : item.image_url || item.logo || item.photo_url;
 
   return (

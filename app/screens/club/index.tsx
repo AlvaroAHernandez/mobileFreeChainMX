@@ -1,105 +1,207 @@
-// app/screens/club/index.tsx
-import ScreenLayout from '@/components/ScreenLayout';
-import { ThemedText } from '@/components/themed-text';
-import { useGlobalStyles } from '@/constants/globalStyles';
-import { getThemeColors, Radius, Spacing } from '@/constants/theme';
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { TextInput, TouchableOpacity, View } from 'react-native';
-
-const MOCK_CLUBS = [
-  { id: '1', name: 'Riders del Valle', description: 'Club de motociclistas apasionados por las rutas de montaña y la aventura.', location: 'Ciudad de México', members: 15 },
-  { id: '2', name: 'Águilas del Asfalto', description: 'Comunidad de riders urbanos y touring.', location: 'Guadalajara', members: 22 },
-  { id: '3', name: 'Lobos de Carretera', description: 'Para los amantes de las largas distancias y el touring.', location: 'Monterrey', members: 8 },
-];
+// app/screens/club/index.tsx (CORREGIDO)
+import ScreenLayout from "@/components/ScreenLayout";
+import ClubCard from "@/components/clubs/ClubCard";
+import { ThemedText } from "@/components/themed-text";
+import { EmptyState } from "@/components/ui/EmptyState";
+import SearchBar from "@/components/ui/SearchBar";
+import { useGlobalStyles } from "@/constants/globalStyles";
+import { getThemeColors } from "@/constants/theme";
+import { useOrganizations } from "@/hooks/useOrganizations";
+import { useRefresh } from "@/hooks/useRefresh";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import React, { useState } from "react";
+import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function ClubExploreScreen() {
   const router = useRouter();
   const gs = useGlobalStyles();
-  const Colors = getThemeColors('dark');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filteredClubs, setFilteredClubs] = useState(MOCK_CLUBS);
+  const Colors = getThemeColors("dark");
+
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const {
+    organizations,
+    loading,
+    error,
+    actionLoading,
+    refetch,
+    searchOrganizations,
+    joinOrganization,
+    leaveOrganization,
+  } = useOrganizations();
+
+  const { refreshing, onRefresh } = useRefresh(refetch);
+
+  // Separar clubs por membresía
+  const memberClubs = organizations.filter((org) => org.is_member);
+  const availableClubs = organizations.filter((org) => !org.is_member);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    setFilteredClubs(
-      MOCK_CLUBS.filter((club) =>
-        club.name.toLowerCase().includes(query.toLowerCase())
-      )
-    );
+    searchOrganizations(query);
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    searchOrganizations("");
   };
 
   return (
-    <ScreenLayout title="MOTOCLUBS">
-      {/* Subtítulo y botón crear club */}
-      <View style={{ marginTop: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <View>
-          <ThemedText style={[gs.title, { fontSize: 20 }]}>MotoClubs</ThemedText>
-          <ThemedText style={[gs.textSecondary, { marginTop: 4 }]}>Explora y únete.</ThemedText>
-        </View>
-        <TouchableOpacity
-          style={{
-            backgroundColor: Colors.tint,
-            width: 36,
-            height: 36,
-            borderRadius: 18,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-          onPress={() => router.push('/screens/club/create')}
-        >
-          <Ionicons name="add" size={24} color="#fff" />
-        </TouchableOpacity>
-      </View>
+    <ScreenLayout
+      title="MOTOCLUBS"
+      onRefresh={onRefresh}
+      refreshing={refreshing}
+    >
+      {/* Header simple y limpio */}
+      <View style={{ marginBottom: 20 }}>
+        <View style={styles.header}>
+          <View>
+            <ThemedText style={[gs.title, { fontSize: 24, marginBottom: 4 }]}>
+              MotoClubs
+            </ThemedText>
+            <ThemedText style={[gs.textSecondary, { fontSize: 16 }]}>
+              Explora y únete a clubs
+            </ThemedText>
+          </View>
 
-      {/* Buscar MotoClubs */}
-      <View style={{ marginTop: 15 }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            backgroundColor: Colors.surface,
-            borderRadius: Radius.medium,
-            paddingHorizontal: Spacing.md,
-            height: 44,
-          }}
-        >
-          <Ionicons name="search" size={20} color={Colors.textSecondary} />
-          <TextInput
-            style={[gs.input, { flex: 1, marginLeft: 10, color: Colors.text }]}
-            placeholder="Busca motoclubs..."
-            placeholderTextColor={Colors.textSecondary}
+          <TouchableOpacity
+            style={[styles.addButton, { backgroundColor: Colors.tint }]}
+            onPress={() => router.push("/(tabs)/club/create")}
+          >
+            <Ionicons name="add" size={20} color="#fff" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Barra de búsqueda integrada */}
+        <View style={{ marginTop: 16 }}>
+          <SearchBar
             value={searchQuery}
             onChangeText={handleSearch}
+            placeholder="Buscar clubs por nombre..."
+            onClear={handleClearSearch}
           />
         </View>
       </View>
 
-      {/* Lista de MotoClubs */}
-      <View style={{ marginTop: 20 }}>
-        {filteredClubs.length === 0 && (
-          <ThemedText style={gs.textSecondary}>No se encontraron motoclubs.</ThemedText>
+      {/* Estados */}
+      {loading && !refreshing && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.primary} />
+        </View>
+      )}
+
+      {error && !loading && (
+        <View style={{ marginTop: 8 }}>
+          <EmptyState
+            message={error}
+            icon="alert-circle-outline"
+            onRetry={refetch}
+          />
+        </View>
+      )}
+
+      {/* Lista de Clubs */}
+      <View style={styles.clubsContainer}>
+        {/* Tus Clubs */}
+        {!loading && memberClubs.length > 0 && (
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="people" size={20} color={Colors.primary} />
+              <ThemedText style={styles.sectionTitle}>
+                Tus Clubs ({memberClubs.length})
+              </ThemedText>
+            </View>
+            {memberClubs.map((organization) => (
+              <ClubCard
+                key={organization.id}
+                organization={organization}
+                onPress={() =>
+                  router.push(`/screens/club/detail?id=${organization.id}` as any)
+                }
+                onJoin={joinOrganization}
+                onLeave={leaveOrganization}
+                actionLoading={actionLoading === organization.id}
+              />
+            ))}
+          </View>
         )}
 
-        {filteredClubs.map((club) => (
-          <TouchableOpacity
-            key={club.id}
-            style={[gs.card, { marginTop: 15 }]}
-            onPress={() => router.push(`/screens/club/clubDetail?id=${club.id}`)}
-          >
-            <ThemedText style={[gs.textPrimary, { fontWeight: '600', fontSize: 16 }]}>{club.name}</ThemedText>
-            <ThemedText style={[gs.textSecondary, { marginTop: 4 }]} numberOfLines={2}>
-              {club.description}
-            </ThemedText>
-            <ThemedText style={[gs.textSecondary, { marginTop: 4, fontSize: 12 }]}>
-              {club.location} • {club.members} Miembros
-            </ThemedText>
-          </TouchableOpacity>
-        ))}
+        {/* Clubs Disponibles */}
+        {!loading && availableClubs.length > 0 && (
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="star-outline" size={20} color={Colors.primary} />
+              <ThemedText style={styles.sectionTitle}>
+                Clubs Disponibles ({availableClubs.length})
+              </ThemedText>
+            </View>
+            {availableClubs.map((organization) => (
+              <ClubCard
+                key={organization.id}
+                organization={organization}
+                onPress={() =>
+                  router.push(`/screens/club/detail?id=${organization.id}` as any)
+                }
+                onJoin={joinOrganization}
+                onLeave={leaveOrganization}
+                actionLoading={actionLoading === organization.id}
+              />
+            ))}
+          </View>
+        )}
+
+        {/* Empty State */}
+        {!loading && organizations.length === 0 && (
+          <EmptyState
+            message={
+              searchQuery
+                ? "No se encontraron clubs con ese nombre"
+                : "No hay clubs disponibles"
+            }
+            icon="people-outline"
+            onRetry={refetch}
+          />
+        )}
       </View>
 
-      <View style={{ height: 40 }} />
+      <View style={{ height: 20 }} />
     </ScreenLayout>
   );
 }
+
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  addButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 40,
+  },
+  clubsContainer: {
+    flex: 1,
+  },
+  section: {
+    marginBottom: 24,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+    gap: 8,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+  },
+});

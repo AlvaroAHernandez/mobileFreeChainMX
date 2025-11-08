@@ -1,16 +1,18 @@
+// components/ScreenLayout.tsx (ACTUALIZADO)
 import { getThemeColors } from "@/constants/theme";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    Modal,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  Modal,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import Header from "./Header";
 import { ThemedView } from "./themed-view";
@@ -18,12 +20,19 @@ import { ThemedView } from "./themed-view";
 interface ScreenLayoutProps {
   children: React.ReactNode;
   title?: string;
+  onRefresh?: () => Promise<void>; // ← Nueva prop opcional
+  refreshing?: boolean; // ← Nueva prop opcional
 }
 
-export default function ScreenLayout({ children, title }: ScreenLayoutProps) {
+export default function ScreenLayout({
+  children,
+  title,
+  onRefresh,
+  refreshing = false,
+}: ScreenLayoutProps) {
   const { logout } = useAuth();
   const [menuVisible, setMenuVisible] = useState(false);
-  const [loading, setLoading] = useState(false); // loader mientras cierra sesión
+  const [loading, setLoading] = useState(false);
   const Colors = getThemeColors("dark");
   const router = useRouter();
 
@@ -33,10 +42,10 @@ export default function ScreenLayout({ children, title }: ScreenLayoutProps) {
     try {
       await logout();
       setLoading(false);
-      Alert.alert("Éxito", "Sesión cerrada correctamente"); // mensaje de éxito
+      Alert.alert("Éxito", "Sesión cerrada correctamente");
     } catch (err) {
       setLoading(false);
-      Alert.alert("Error", "No se pudo cerrar sesión"); // mensaje de error
+      Alert.alert("Error", "No se pudo cerrar sesión");
     }
   };
 
@@ -44,15 +53,26 @@ export default function ScreenLayout({ children, title }: ScreenLayoutProps) {
     <ThemedView style={{ flex: 1 }}>
       <Header
         title={title}
-        onProfilePress={() => router.push("/screens/profile/profile")} // <--- aquí redirige
+        onProfilePress={() => router.push("/screens/profile/profile")}
         onNotificationsPress={() => console.log("Notificaciones")}
         onMenuPress={() => setMenuVisible(true)}
       />
-
-      <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 20 }}>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1, padding: 20 }}
+        refreshControl={
+          onRefresh ? (
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={Colors.primary}
+              colors={[Colors.primary]}
+              progressBackgroundColor={Colors.surface}
+            />
+          ) : undefined
+        }
+      >
         {children}
       </ScrollView>
-
       {/* === Modal menú === */}
       <Modal
         visible={menuVisible}
@@ -85,7 +105,6 @@ export default function ScreenLayout({ children, title }: ScreenLayoutProps) {
           </View>
         </TouchableOpacity>
       </Modal>
-
       {/* Loader de logout */}
       <Modal visible={loading} transparent animationType="fade">
         <View style={styles.loaderOverlay}>
