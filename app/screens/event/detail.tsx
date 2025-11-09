@@ -5,17 +5,17 @@ import { ThemedView } from "@/components/themed-view";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { useGlobalStyles } from "@/constants/globalStyles";
 import { getThemeColors } from "@/constants/theme";
-import { useUser } from "@/context/UserContext";
+import { useAuth } from "@/hooks/useAuth";
 import { useEventDetail } from "@/hooks/useEventDetail";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
-    ActivityIndicator,
-    Image,
-    ScrollView,
-    StyleSheet,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View
 } from "react-native";
 
 export default function EventDetailScreen() {
@@ -23,7 +23,7 @@ export default function EventDetailScreen() {
   const { id } = useLocalSearchParams();
   const gs = useGlobalStyles();
   const Colors = getThemeColors("dark");
-  const { user } = useUser();
+  const { user } = useAuth();
   
   const {
     event,
