@@ -12,7 +12,8 @@ export default function ScreensLayout() {
       <Stack.Screen name="club/index" />
       <Stack.Screen name="club/create" />
       <Stack.Screen name="riders/index" />
-      <Stack.Screen name="events/index" />
+      <Stack.Screen name="event/index" />
+      <Stack.Screen name="event/detail" />
       <Stack.Screen name="routes/index" />
     </Stack>
   );

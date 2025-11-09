@@ -48,7 +48,7 @@ export default function EventsScreen() {
           
           <TouchableOpacity
             style={[styles.createButton, { backgroundColor: Colors.tint }]}
-            onPress={() => router.push("/screens/events/create")}
+            onPress={() => router.push("/(tabs)/events/create")}
           >
             <Ionicons name="add" size={20} color="#fff" />
           </TouchableOpacity>
@@ -99,7 +99,7 @@ export default function EventsScreen() {
               data={participating}
               color={Colors.success}
               badge={`${participating.length}`}
-              onPress={(event) => router.push(`/screens/events/detail?id=${event.id}`)}
+              onPress={(event) => router.push(`/(tabs)/events/detail?id=${event.id}`)}
             />
           )}
 
@@ -110,7 +110,7 @@ export default function EventsScreen() {
               data={myClubs}
               color={Colors.primary}
               badge={`${myClubs.length}`}
-              onPress={(event) => router.push(`/screens/events/detail?id=${event.id}`)}
+              onPress={(event) => router.push(`/(tabs)/events/detail?id=${event.id}`)}
             />
           )}
 
@@ -121,7 +121,7 @@ export default function EventsScreen() {
               data={general}
               color={Colors.tint}
               badge={`${general.length}`}
-              onPress={(event) => router.push(`/screens/events/detail?id=${event.id}`)}
+              onPress={(event) => router.push(`/(tabs)/events/detail?id=${event.id}`)}
             />
           )}
         </ScrollView>
