@@ -1,4 +1,3 @@
-// components/ScreenLayout.tsx (ACTUALIZADO)
 import { getThemeColors } from "@/constants/theme";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "expo-router";
@@ -20,8 +19,8 @@ import { ThemedView } from "./themed-view";
 interface ScreenLayoutProps {
   children: React.ReactNode;
   title?: string;
-  onRefresh?: () => Promise<void>; // ← Nueva prop opcional
-  refreshing?: boolean; // ← Nueva prop opcional
+  onRefresh?: () => Promise<void>;
+  refreshing?: boolean;
 }
 
 export default function ScreenLayout({
