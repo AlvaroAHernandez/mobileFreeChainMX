@@ -1,4 +1,5 @@
-import { useUser } from '@/context/UserContext';
+// hooks/useEventDetail.ts
+import { useAuth } from '@/context/AuthContext';
 import api from '@/services/api';
 import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
@@ -9,7 +10,7 @@ export function useEventDetail(eventId: string) {
   const [attending, setAttending] = useState(false);
   const [attendingLoading, setAttendingLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useUser();
+  const { user } = useAuth(); // 🔹 Ahora usa el contexto global
 
   const loadEvent = async () => {
     try {
@@ -20,14 +21,17 @@ export function useEventDetail(eventId: string) {
 
       if (response.data.code === 200 || response.data.message === "ok") {
         const eventData = response.data.data.event;
-
         setEvent(eventData);
 
-        const isAttending = eventData.attendees?.some(
-          (attendee: any) => attendee.id === user?.id
-        );
-
-        setAttending(isAttending);
+        // 🔹 Verifica asistencia con el usuario del contexto
+        if (user) {
+          const isAttending = eventData.attendees?.some(
+            (attendee: any) => attendee.id === user.id
+          );
+          setAttending(isAttending);
+        } else {
+          setAttending(false);
+        }
       } else {
         throw new Error(response.data.message || 'Error al cargar el evento');
       }
@@ -52,20 +56,21 @@ export function useEventDetail(eventId: string) {
       setAttendingLoading(true);
 
       if (attending) {
-        // 👇 POST en lugar de DELETE
-        const res = await api.post(`/events/${eventId}/cancel`);
+        await api.post(`/events/${eventId}/cancel`);
         setAttending(false);
-        setEvent(prev => ({
+        setEvent((prev: any) => ({
           ...prev,
           attendees: prev.attendees.filter((a: any) => a.id !== user.id),
         }));
+        Alert.alert('Éxito', 'Asistencia cancelada');
       } else {
-        const res = await api.post(`/events/${eventId}/attend`);
+        await api.post(`/events/${eventId}/attend`);
         setAttending(true);
-        setEvent(prev => ({
+        setEvent((prev: any) => ({
           ...prev,
           attendees: [...(prev?.attendees || []), user],
         }));
+        Alert.alert('Éxito', 'Asistencia confirmada');
       }
     } catch (err: any) {
       const errorMessage =
@@ -78,11 +83,12 @@ export function useEventDetail(eventId: string) {
     }
   };
 
+  // 🔹 Recargar cuando cambia el usuario o el eventId
   useEffect(() => {
     if (eventId) {
       loadEvent();
     }
-  }, [eventId]);
+  }, [eventId, user?.id]);
 
   return {
     event,

@@ -1,8 +1,9 @@
+// screens/auth/login.tsx
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useGlobalStyles } from "@/constants/globalStyles";
 import { getThemeColors } from "@/constants/theme";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/context/AuthContext"; // 🔹 CAMBIO: importar del contexto
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -23,7 +24,7 @@ export default function LoginScreen() {
   const router = useRouter();
   const gs = useGlobalStyles();
   const Colors = getThemeColors("dark");
-  const { login } = useAuth();
+  const { login } = useAuth(); // 🔹 CAMBIO: ahora viene del contexto global
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
 
@@ -36,12 +37,13 @@ export default function LoginScreen() {
     try {
       setLoading(true);
       await login(form.email, form.password);
-      router.replace("/(tabs)"); // ir a home
+      // 🔹 CAMBIO: El AuthContext ya maneja la redirección automáticamente
+      // No necesitas router.replace aquí
     } catch (error: any) {
-      console.log("❌ Error login:", error.response?.data || error.message);
+      console.log("❌ Error login:", error);
       Alert.alert(
         "Error",
-        error.response?.data?.message || "Error al iniciar sesión"
+        error.message || "Error al iniciar sesión"
       );
     } finally {
       setLoading(false);

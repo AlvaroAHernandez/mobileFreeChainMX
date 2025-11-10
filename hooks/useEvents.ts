@@ -38,9 +38,12 @@ export const useEvents = () => {
       const res = await api.get(url);
       const data = res.data.data;
 
-      setParticipating(data.participating || []);
-      setMyClubs(data.my_clubs || []);
-      setGeneral(data.general || []);
+      const markAsAttending = (events: Event[], attending = false) =>
+        (events || []).map((e) => ({ ...e, is_attending: attending }));
+
+      setParticipating(markAsAttending(data.participating, true));
+      setMyClubs(markAsAttending(data.my_clubs, false));
+      setGeneral(markAsAttending(data.general, false));
     } catch (err: any) {
       console.error("❌ Error fetching events:", err);
       setError(err.response?.data?.message || "Error al cargar los eventos");

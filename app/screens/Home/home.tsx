@@ -1,4 +1,3 @@
-// app/screens/Home/home.tsx (REDISEÑADO)
 import ScreenLayout from "@/components/ScreenLayout";
 import { ThemedText } from "@/components/themed-text";
 import { CustomButton } from "@/components/ui/CustomButton";
@@ -11,7 +10,15 @@ import { useRefresh } from "@/hooks/useRefresh";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
-import { ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function HomeScreen() {
   const gs = useGlobalStyles();
@@ -24,9 +31,10 @@ export default function HomeScreen() {
   const stats = {
     totalMotos: motos.length,
     totalClubs: motoClubs.length,
-    upcomingEvents: userData?.events?.filter((event: any) => 
-      new Date(event.date) > new Date()
-    ).length || 0,
+    upcomingEvents:
+      userData?.events?.filter(
+        (event: any) => new Date(event.date) >= new Date()
+      ).length || 0,
   };
 
   return (
@@ -40,28 +48,41 @@ export default function HomeScreen() {
         <View style={styles.header}>
           <View style={styles.profileSection}>
             {userData?.full_profile_photo_url ? (
-              <Image 
-                source={{ uri: userData.full_profile_photo_url }} 
+              <Image
+                source={{ uri: userData.full_profile_photo_url }}
                 style={styles.profileImage}
               />
             ) : (
               <View style={[styles.profileImage, styles.profilePlaceholder]}>
-                <Ionicons name="person" size={24} color={Colors.textSecondary} />
+                <Ionicons
+                  name="person"
+                  size={24}
+                  color={Colors.textSecondary}
+                />
               </View>
             )}
             <View style={styles.greeting}>
-              <ThemedText style={styles.welcomeText}>¡Bienvenido de vuelta!</ThemedText>
+              <ThemedText style={styles.welcomeText}>
+                ¡Bienvenido de vuelta!
+              </ThemedText>
               <ThemedText style={styles.userName}>
                 {userData?.name || "Motociclista"}
               </ThemedText>
             </View>
           </View>
-          
-          <TouchableOpacity 
-            style={[styles.notificationButton, { backgroundColor: Colors.surface }]}
+
+          <TouchableOpacity
+            style={[
+              styles.notificationButton,
+              { backgroundColor: Colors.surface },
+            ]}
             onPress={() => router.push("/screens/notifications")}
           >
-            <Ionicons name="notifications-outline" size={20} color={Colors.text} />
+            <Ionicons
+              name="notifications-outline"
+              size={20}
+              color={Colors.text}
+            />
           </TouchableOpacity>
         </View>
 
@@ -82,22 +103,15 @@ export default function HomeScreen() {
               color={Colors.success}
               onPress={() => router.push("/(tabs)/club")}
             />
-            <StatCard
-              icon="calendar"
-              value={stats.upcomingEvents}
-              label="Eventos"
-              color={Colors.tint}
-              onPress={() => router.push("/(tabs)/events")}
-            />
           </View>
         )}
 
         {/* Acciones rápidas */}
         <View style={styles.quickActions}>
           <CustomButton
-            title="Crear Evento"
+            title="Agregar moto"
             icon={<Ionicons name="add-circle-outline" size={16} color="#fff" />}
-            onPress={() => router.push("/(tabs)/events/create")}
+            onPress={() => router.push("/screens/motorcycle/AddEditMotoScreen")}
             variant="primary"
             style={styles.quickActionButton}
             textStyle={styles.quickActionText}
@@ -116,24 +130,26 @@ export default function HomeScreen() {
         <View style={styles.section}>
           <SectionHeader
             title="Mis MotoClubs"
-            subtitle={`${motoClubs.length} club${motoClubs.length !== 1 ? 'es' : ''} donde ruedas`}
+            subtitle={`${motoClubs.length} club${
+              motoClubs.length !== 1 ? "es" : ""
+            } donde ruedas`}
             onPressMore={() => router.push("/(tabs)/club")}
           />
-          
+
           {loading ? (
             <ActivityIndicator color={Colors.primary} style={styles.loading} />
           ) : motoClubs.length === 0 ? (
-            <EmptyState 
+            <EmptyState
               message="No eres miembro de ningún motoclub"
               icon="people-outline"
               actionButton={{
                 text: "Explorar Clubs",
-                onPress: () => router.push("/(tabs)/club")
+                onPress: () => router.push("/(tabs)/club"),
               }}
             />
           ) : (
             <FlatList
-              data={motoClubs.slice(0, 5)} // Mostrar máximo 5
+              data={motoClubs.slice(0, 5)}
               horizontal
               keyExtractor={(item) => item.id.toString()}
               showsHorizontalScrollIndicator={false}
@@ -141,7 +157,9 @@ export default function HomeScreen() {
               renderItem={({ item }) => (
                 <ClubCard
                   club={item}
-                  onPress={() => router.push(`/screens/club/detail?id=${item.id}`)}
+                  onPress={() =>
+                    router.push(`/screens/club/detail?id=${item.id}`)
+                  }
                 />
               )}
             />
@@ -152,7 +170,9 @@ export default function HomeScreen() {
         <View style={styles.section}>
           <SectionHeader
             title="Mi Garaje"
-            subtitle={`${motos.length} motocicleta${motos.length !== 1 ? 's' : ''} registrada${motos.length !== 1 ? 's' : ''}`}
+            subtitle={`${motos.length} motocicleta${
+              motos.length !== 1 ? "s" : ""
+            } registrada${motos.length !== 1 ? "s" : ""}`}
             onPressMore={() => router.push("/screens/motorcycle/garage")}
           />
 
@@ -164,12 +184,13 @@ export default function HomeScreen() {
               icon="bicycle-outline"
               actionButton={{
                 text: "Agregar Moto",
-                onPress: () => router.push("/screens/motorcycle/AddEditMotoScreen")
+                onPress: () =>
+                  router.push("/screens/motorcycle/AddEditMotoScreen"),
               }}
             />
           ) : (
             <FlatList
-              data={motos.slice(0, 5)} // Mostrar máximo 5
+              data={motos.slice(0, 5)}
               horizontal
               keyExtractor={(item) => item.id.toString()}
               showsHorizontalScrollIndicator={false}
@@ -177,13 +198,14 @@ export default function HomeScreen() {
               renderItem={({ item }) => (
                 <MotorcycleCard
                   motorcycle={item}
-                  onPress={() => router.push(`/screens/motorcycle/detail?id=${item.id}`)}
+                  onPress={() =>
+                    router.push(`/screens/motorcycle/detail?id=${item.id}`)
+                  }
                 />
               )}
             />
           )}
 
-          {/* Agregar moto */}
           <CustomButton
             title="Agregar nueva moto"
             icon={<Ionicons name="add-circle-outline" size={18} color="#fff" />}
@@ -191,23 +213,6 @@ export default function HomeScreen() {
             style={styles.addButton}
           />
         </View>
-
-        {/* Próximos Eventos (si tienes datos de eventos) */}
-        {userData?.events && userData.events.length > 0 && (
-          <View style={styles.section}>
-            <SectionHeader
-              title="Próximos Eventos"
-              subtitle="Tus próximas rodadas"
-              onPressMore={() => router.push("/(tabs)/events")}
-            />
-            <EventPreview
-              events={userData.events.filter((event: any) => 
-                new Date(event.date) > new Date()
-              ).slice(0, 3)}
-              onPressEvent={(eventId) => router.push(`/screens/events/detail?id=${eventId}`)}
-            />
-          </View>
-        )}
 
         <View style={{ height: 40 }} />
       </ScrollView>
@@ -218,9 +223,9 @@ export default function HomeScreen() {
 // Componente de Tarjeta de Estadísticas
 function StatCard({ icon, value, label, color, onPress }: any) {
   const Colors = getThemeColors("dark");
-  
+
   return (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={[styles.statCard, { backgroundColor: Colors.surface }]}
       onPress={onPress}
     >
@@ -236,21 +241,21 @@ function StatCard({ icon, value, label, color, onPress }: any) {
 // Componente de Club (mejorado)
 function ClubCard({ club, onPress }: any) {
   const Colors = getThemeColors("dark");
-  
+
   return (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={[styles.clubCard, { backgroundColor: Colors.surface }]}
       onPress={onPress}
     >
-      <Image 
-        source={{ uri: club.logo_url || "https://via.placeholder.com/60" }} 
+      <Image
+        source={{ uri: club.logo_url || "https://via.placeholder.com/60" }}
         style={styles.clubImage}
       />
       <ThemedText style={styles.clubName} numberOfLines={1}>
         {club.name}
       </ThemedText>
       <ThemedText style={styles.clubMembers} numberOfLines={1}>
-        {club.users_count} miembro{club.users_count !== 1 ? 's' : ''}
+        {club.users_count} miembro{club.users_count !== 1 ? "s" : ""}
       </ThemedText>
     </TouchableOpacity>
   );
@@ -259,9 +264,9 @@ function ClubCard({ club, onPress }: any) {
 // Componente de Motocicleta (mejorado)
 function MotorcycleCard({ motorcycle, onPress }: any) {
   const Colors = getThemeColors("dark");
-  
+
   return (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={[styles.motoCard, { backgroundColor: Colors.surface }]}
       onPress={onPress}
     >
@@ -281,13 +286,13 @@ function MotorcycleCard({ motorcycle, onPress }: any) {
 // Componente de Vista Previa de Eventos
 function EventPreview({ events, onPressEvent }: any) {
   const Colors = getThemeColors("dark");
-  
+
   if (events.length === 0) return null;
-  
+
   return (
     <View style={styles.eventsPreview}>
       {events.map((event: any) => (
-        <TouchableOpacity 
+        <TouchableOpacity
           key={event.id}
           style={[styles.eventPreviewCard, { backgroundColor: Colors.surface }]}
           onPress={() => onPressEvent(event.id)}
@@ -298,7 +303,7 @@ function EventPreview({ events, onPressEvent }: any) {
               {event.name}
             </ThemedText>
             <ThemedText style={styles.eventPreviewDate} numberOfLines={1}>
-              {new Date(event.date).toLocaleDateString('es-ES')}
+              {new Date(event.date).toLocaleDateString("es-ES")}
             </ThemedText>
           </View>
         </TouchableOpacity>
