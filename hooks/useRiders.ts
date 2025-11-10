@@ -3,12 +3,6 @@ import { getUser } from "@/utils/storage";
 import * as Location from "expo-location";
 import { useEffect, useRef, useState } from "react";
 
-const riderImages = [
-  require("../assets/images/riders/perfil1.png"),
-  require("../assets/images/riders/perfil2.png"),
-  require("../assets/images/riders/perfil3.png"),
-];
-
 export interface Rider {
   user_id: number;
   latitude: number;
@@ -16,7 +10,8 @@ export interface Rider {
   user: {
     id: number;
     name: string;
-    profile_photo_path: any;
+    lastname?: string;
+    profile_photo_path: string;
   };
 }
 
@@ -39,14 +34,22 @@ const distanceBetween = (
   return R * c;
 };
 
+const getAvatarUrl = (user: any): string => {
+  // Si existe la URL completa de la foto, úsala
+  if (user.full_profile_photo_url) {
+    return user.full_profile_photo_url;
+  }
+  
+  // Fallback: genera un avatar con las iniciales
+  const fullName = `${user.name || ''} ${user.lastname || ''}`.trim();
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=FF6B35&color=fff&bold=true&size=128`;
+};
+
 export const useRiders = () => {
   const [riders, setRiders] = useState<Rider[]>([]);
   const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
   const locationSubscription = useRef<Location.LocationSubscription | null>(null);
-
-  // Mantener un mapa user_id → imagen para que siempre sea la misma
-  const userImageMap = useRef<Map<number, any>>(new Map());
 
   useEffect(() => {
     (async () => {
@@ -55,17 +58,12 @@ export const useRiders = () => {
     })();
   }, []);
 
-  const getImageForUser = (userId: number) => {
-    if (!userImageMap.current.has(userId)) {
-      const nextImage = riderImages[userImageMap.current.size % riderImages.length];
-      userImageMap.current.set(userId, nextImage);
-    }
-    return userImageMap.current.get(userId);
-  };
-
   const startTracking = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") return console.log("Permiso de ubicación denegado");
+    if (status !== "granted") {
+      console.log("Permiso de ubicación denegado");
+      return;
+    }
 
     locationSubscription.current = await Location.watchPositionAsync(
       {
@@ -87,15 +85,18 @@ export const useRiders = () => {
 
             // Traer otros riders
             const res = await api.get("/location/all");
+            
             const ridersWithImages: Rider[] = res.data
-              .filter((r: any) => r.user.id !== currentUserId)
+              .filter((r: any) => r.user && r.user.id !== currentUserId)
               .map((r: any) => ({
                 user_id: r.user.id,
                 latitude: Number(r.latitude),
                 longitude: Number(r.longitude),
                 user: {
-                  ...r.user,
-                  profile_photo_path: getImageForUser(r.user.id),
+                  id: r.user.id,
+                  name: r.user.name,
+                  lastname: r.user.lastname,
+                  profile_photo_path: getAvatarUrl(r.user), // 🔥 Usa la URL real o genera avatar
                 },
               }));
 

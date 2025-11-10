@@ -97,7 +97,7 @@ export default function HomeScreen() {
           <CustomButton
             title="Crear Evento"
             icon={<Ionicons name="add-circle-outline" size={16} color="#fff" />}
-            onPress={() => router.push("/screens/events/create")}
+            onPress={() => router.push("/(tabs)/events/create")}
             variant="primary"
             style={styles.quickActionButton}
             textStyle={styles.quickActionText}
