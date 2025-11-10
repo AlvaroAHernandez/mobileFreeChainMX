@@ -24,7 +24,13 @@ const ClubSchema = Yup.object().shape({
     .required('El nombre del club es obligatorio')
     .max(50, 'Máximo 50 caracteres'),
   description: Yup.string().max(200, 'Máximo 200 caracteres'),
-  address: Yup.string().max(100, 'Máximo 100 caracteres'),
+  address: Yup.string()
+    .matches(
+      /^[a-zA-ZÀ-ÿ\s]+(?:,\s*[a-zA-ZÀ-ÿ\s]+)*$/,
+      'Debe ingresar una ciudad válida (solo letras y espacios)'
+    )
+    .max(100, 'Máximo 100 caracteres')
+    .required('La ciudad es obligatoria'),
 });
 
 export default function ClubCreateScreen() {
@@ -214,9 +220,11 @@ export default function ClubCreateScreen() {
 
                   {/* Ubicación */}
                   <View style={styles.inputGroup}>
-                    <ThemedText style={styles.label}>Ubicación</ThemedText>
+                    <ThemedText style={styles.label}>
+                      Ciudad <ThemedText style={{ color: Colors.danger }}>*</ThemedText>
+                    </ThemedText>
                     <TextInput
-                      placeholder="Ciudad, Estado o dirección..."
+                      placeholder="Ej: La Paz, Baja California Sur"
                       placeholderTextColor={Colors.textSecondary}
                       value={values.address}
                       onChangeText={handleChange('address')}
@@ -263,7 +271,7 @@ export default function ClubCreateScreen() {
 
                   <TouchableOpacity
                     style={[styles.cancelButton, { borderColor: Colors.border }]}
-                    onPress={handleCancel}
+                    onPress={() => router.back()}
                     disabled={isSubmitting}
                   >
                     <ThemedText style={[styles.cancelButtonText, { color: Colors.text }]}>
