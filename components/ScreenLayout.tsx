@@ -1,6 +1,6 @@
 // components/ScreenLayout.tsx (ACTUALIZADO)
 import { getThemeColors } from "@/constants/theme";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -91,15 +91,6 @@ export default function ScreenLayout({
             <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
               <Text style={[styles.menuText, { color: Colors.text }]}>
                 Cerrar sesión
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.menuItem}
-              onPress={() => console.log("Otra acción")}
-            >
-              <Text style={[styles.menuText, { color: Colors.text }]}>
-                Otra acción
               </Text>
             </TouchableOpacity>
           </View>
