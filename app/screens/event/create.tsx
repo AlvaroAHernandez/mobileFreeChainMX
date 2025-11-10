@@ -4,25 +4,25 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useGlobalStyles } from "@/constants/globalStyles";
 import { getThemeColors } from "@/constants/theme";
-import { useUser } from "@/context/UserContext";
+import { useAuth } from "@/context/AuthContext";
 import { useEventCreation } from "@/hooks/useEventCreation";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-    ActivityIndicator,
-    ScrollView,
-    StyleSheet,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 export default function CreateEventScreen() {
   const router = useRouter();
   const gs = useGlobalStyles();
   const Colors = getThemeColors("dark");
-  const { user } = useUser();
+  const { user } = useAuth();
 
   const {
     canCreateEvents,
@@ -43,11 +43,6 @@ export default function CreateEventScreen() {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const eligibleOrganizations = getEligibleOrganizations();
-
-  console.log("🔍 CreateEventScreen - user:", user);
-  console.log("🔍 CreateEventScreen - eligibleOrganizations:", eligibleOrganizations);
-
-  // ✅ QUITADA LA VALIDACIÓN DE PERMISOS - Todos pueden acceder
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
@@ -80,8 +75,6 @@ export default function CreateEventScreen() {
         ...formData,
         date: formData.date.toISOString().split(".")[0], // Formato ISO sin milisegundos
       };
-
-      console.log("🎯 Submitting event:", eventData);
       await createEvent(eventData);
     } catch (err) {
       // El error ya está manejado en el hook
@@ -133,7 +126,6 @@ export default function CreateEventScreen() {
                       },
                     ]}
                     onPress={() => {
-                      console.log("🎯 Selected organization:", org.id, org.name);
                       setFormData((prev) => ({
                         ...prev,
                         organization_id: org.id.toString(),

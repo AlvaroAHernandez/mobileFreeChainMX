@@ -1,3 +1,4 @@
+import { useAuth } from "@/context/AuthContext";
 import { useRiders } from "@/hooks/useRiders";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "expo-router";
@@ -15,8 +16,8 @@ import {
 import MapView, { Marker } from "react-native-maps";
 
 export default function RidersMap() {
-  const { riders, location, currentUserId, startTracking, stopTracking } =
-    useRiders();
+  const { riders, location, startTracking, stopTracking } = useRiders();
+  const { user } = useAuth();
   const [showRidersList, setShowRidersList] = useState(false);
   const slideAnim = useRef(new Animated.Value(0)).current;
   const mapRef = useRef<MapView>(null);
@@ -69,6 +70,7 @@ export default function RidersMap() {
 
   return (
     <View style={styles.container}>
+      {/* 🗺️ Mapa */}
       <MapView
         ref={mapRef}
         style={styles.map}
@@ -81,24 +83,34 @@ export default function RidersMap() {
         showsUserLocation={true}
         showsMyLocationButton={false}
       >
-        {riders.map((r) =>
-          r.user_id !== currentUserId && r.latitude && r.longitude ? (
-            <Marker
-              key={r.user_id}
-              coordinate={{ latitude: r.latitude, longitude: r.longitude }}
-              title={r.user.name}
-            >
-              <View style={styles.markerContainer}>
-                <View style={styles.markerImageWrapper}>
-                  <Image
-                    source={{ uri: r.user.profile_photo_path }}
-                    style={styles.markerImage}
-                    resizeMode="cover"
-                  />
-                </View>
-              </View>
-            </Marker>
-          ) : null
+        {riders.map(
+          (r) =>
+            r.latitude &&
+            r.longitude && (
+              <Marker
+                key={r.user_id}
+                coordinate={{
+                  latitude: r.latitude,
+                  longitude: r.longitude,
+                }}
+                title={
+                  r.user_id === user?.id ? `${r.user.name} (Tú)` : r.user.name
+                }
+              >
+                {/* Si es el usuario actual, no mostrar imagen */}
+                {r.user_id !== user?.id && (
+                  <View style={styles.markerContainer}>
+                    <View style={styles.markerImageWrapper}>
+                      <Image
+                        source={{ uri: r.user.profile_photo_path }}
+                        style={styles.markerImage}
+                        resizeMode="cover"
+                      />
+                    </View>
+                  </View>
+                )}
+              </Marker>
+            )
         )}
       </MapView>
 
@@ -155,7 +167,13 @@ export default function RidersMap() {
                   <Text style={styles.riderName}>{rider.user.name}</Text>
                   <Text style={styles.riderStatus}>En línea</Text>
                 </View>
-                <View style={styles.statusDot} />
+
+                {/* Mostrar “Tú” si es el usuario actual */}
+                {rider.user_id === user?.id ? (
+                  <Text style={styles.youTag}>Tú</Text>
+                ) : (
+                  <View style={styles.statusDot} />
+                )}
               </View>
             ))}
           </ScrollView>
@@ -166,29 +184,16 @@ export default function RidersMap() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  map: {
-    flex: 1,
-  },
+  container: { flex: 1 },
+  map: { flex: 1 },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#f5f5f5",
   },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: "#666",
-  },
-  header: {
-    position: "absolute",
-    top: 50,
-    left: 16,
-    right: 16,
-  },
+  loadingText: { marginTop: 16, fontSize: 16, color: "#666" },
+  header: { position: "absolute", top: 50, left: 16, right: 16 },
   statCard: {
     backgroundColor: "rgba(255, 255, 255, 0.95)",
     borderRadius: 16,
@@ -202,19 +207,9 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 5,
   },
-  statTextContainer: {
-    flex: 1,
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  statLabel: {
-    fontSize: 12,
-    color: "#666",
-    marginTop: 2,
-  },
+  statTextContainer: { flex: 1 },
+  statValue: { fontSize: 24, fontWeight: "bold", color: "#333" },
+  statLabel: { fontSize: 12, color: "#666", marginTop: 2 },
   centerButton: {
     position: "absolute",
     right: 16,
@@ -252,10 +247,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#FF6B35",
   },
-  markerImage: {
-    width: "100%",
-    height: "100%",
-  },
+  markerImage: { width: "100%", height: "100%" },
   bottomPanel: {
     position: "absolute",
     bottom: 0,
@@ -283,14 +275,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
   },
-  panelTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
-  },
-  ridersList: {
-    overflow: "hidden",
-  },
+  panelTitle: { fontSize: 16, fontWeight: "600", color: "#333" },
+  ridersList: { overflow: "hidden" },
   riderItem: {
     flexDirection: "row",
     alignItems: "center",
@@ -304,26 +290,23 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     borderWidth: 2,
     borderColor: "#FF6B35",
-    overflow: "hidden",
   },
-  riderInfo: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  riderName: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: "#333",
-    marginBottom: 2,
-  },
-  riderStatus: {
-    fontSize: 13,
-    color: "#4ECDC4",
-  },
+  riderInfo: { flex: 1, marginLeft: 12 },
+  riderName: { fontSize: 15, fontWeight: "600", color: "#333", marginBottom: 2 },
+  riderStatus: { fontSize: 13, color: "#4ECDC4" },
   statusDot: {
     width: 10,
     height: 10,
     borderRadius: 5,
     backgroundColor: "#4ECDC4",
+  },
+  youTag: {
+    backgroundColor: "#ddd",
+    color: "#333",
+    fontSize: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
+    fontWeight: "600",
   },
 });

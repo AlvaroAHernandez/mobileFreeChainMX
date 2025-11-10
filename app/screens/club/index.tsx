@@ -1,4 +1,4 @@
-// app/screens/club/index.tsx (CORREGIDO)
+// app/screens/club/index.tsx
 import ScreenLayout from "@/components/ScreenLayout";
 import ClubCard from "@/components/clubs/ClubCard";
 import { ThemedText } from "@/components/themed-text";
@@ -6,11 +6,12 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import SearchBar from "@/components/ui/SearchBar";
 import { useGlobalStyles } from "@/constants/globalStyles";
 import { getThemeColors } from "@/constants/theme";
+import { useAuth } from "@/context/AuthContext";
 import { useOrganizations } from "@/hooks/useOrganizations";
 import { useRefresh } from "@/hooks/useRefresh";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function ClubExploreScreen() {
@@ -19,6 +20,7 @@ export default function ClubExploreScreen() {
   const Colors = getThemeColors("dark");
 
   const [searchQuery, setSearchQuery] = useState("");
+  const { user, refreshUser } = useAuth(); // 👈 traemos el usuario y el refresco global
 
   const {
     organizations,
@@ -33,9 +35,10 @@ export default function ClubExploreScreen() {
 
   const { refreshing, onRefresh } = useRefresh(refetch);
 
-  // Separar clubs por membresía
-  const memberClubs = organizations.filter((org) => org.is_member);
-  const availableClubs = organizations.filter((org) => !org.is_member);
+  // 👇 cuando el usuario cambia (por crear club, unirse, etc.), actualiza la lista
+  useEffect(() => {
+    refetch();
+  }, [user]); // 🔥 importante: se actualiza al cambiar user.organizations
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -47,13 +50,12 @@ export default function ClubExploreScreen() {
     searchOrganizations("");
   };
 
+  // Separar clubs por membresía
+  const memberClubs = organizations.filter((org) => org.is_member);
+  const availableClubs = organizations.filter((org) => !org.is_member);
+
   return (
-    <ScreenLayout
-      title="MOTOCLUBS"
-      onRefresh={onRefresh}
-      refreshing={refreshing}
-    >
-      {/* Header simple y limpio */}
+    <ScreenLayout title="MOTOCLUBS" onRefresh={onRefresh} refreshing={refreshing}>
       <View style={{ marginBottom: 20 }}>
         <View style={styles.header}>
           <View>
@@ -73,7 +75,6 @@ export default function ClubExploreScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Barra de búsqueda integrada */}
         <View style={{ marginTop: 16 }}>
           <SearchBar
             value={searchQuery}
@@ -84,7 +85,6 @@ export default function ClubExploreScreen() {
         </View>
       </View>
 
-      {/* Estados */}
       {loading && !refreshing && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={Colors.primary} />
@@ -101,9 +101,7 @@ export default function ClubExploreScreen() {
         </View>
       )}
 
-      {/* Lista de Clubs */}
       <View style={styles.clubsContainer}>
-        {/* Tus Clubs */}
         {!loading && memberClubs.length > 0 && (
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
@@ -127,7 +125,6 @@ export default function ClubExploreScreen() {
           </View>
         )}
 
-        {/* Clubs Disponibles */}
         {!loading && availableClubs.length > 0 && (
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
@@ -151,7 +148,6 @@ export default function ClubExploreScreen() {
           </View>
         )}
 
-        {/* Empty State */}
         {!loading && organizations.length === 0 && (
           <EmptyState
             message={

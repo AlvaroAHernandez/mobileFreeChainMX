@@ -1,4 +1,5 @@
-import { UserProvider } from "@/context/UserContext"; // 👈 importa el provider
+// app/_layout.tsx
+import { AuthProvider } from "@/context/AuthContext";
 import { navigationRef } from "@/utils/navigation";
 import { Slot, useNavigationContainerRef } from "expo-router";
 import { useEffect } from "react";
@@ -11,8 +12,8 @@ export default function RootLayout() {
   }, [ref]);
 
   return (
-    <UserProvider>
+    <AuthProvider>
       <Slot />
-    </UserProvider>
+    </AuthProvider>
   );
 }

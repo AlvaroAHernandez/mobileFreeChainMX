@@ -1,9 +1,8 @@
 // hooks/useRegister.ts
-import api from "@/services/api";
+import { useAuth } from "@/context/AuthContext"; // 👈 asegúrate que apunta bien al AuthContext
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { Alert } from "react-native";
-import { useAuth } from "./useAuth";
 
 interface RegisterData {
   name: string;
@@ -16,14 +15,14 @@ interface RegisterData {
 }
 
 export const useRegister = () => {
-  const { login } = useAuth();
+  const { register: registerUser } = useAuth(); // 👈 usa el register global del contexto
   const [loading, setLoading] = useState(false);
 
   const pickImage = async (): Promise<any> => {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permisos necesarios', 'Se necesitan permisos para acceder a la galería');
+      if (status !== "granted") {
+        Alert.alert("Permisos necesarios", "Se necesitan permisos para acceder a la galería");
         return null;
       }
 
@@ -34,18 +33,18 @@ export const useRegister = () => {
         quality: 0.8,
       });
 
-      if (!result.canceled && result.assets && result.assets.length > 0) {
+      if (!result.canceled && result.assets?.length > 0) {
         const image = result.assets[0];
         return {
           uri: image.uri,
-          type: 'image/jpeg',
-          name: `profile_${Date.now()}.jpg`
+          type: "image/jpeg",
+          name: `profile_${Date.now()}.jpg`,
         };
       }
       return null;
     } catch (error) {
-      console.error('❌ Error picking image:', error);
-      Alert.alert('Error', 'No se pudo seleccionar la imagen');
+      console.error("❌ Error al seleccionar imagen:", error);
+      Alert.alert("Error", "No se pudo seleccionar la imagen");
       return null;
     }
   };
@@ -53,8 +52,8 @@ export const useRegister = () => {
   const takePhoto = async (): Promise<any> => {
     try {
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permisos necesarios', 'Se necesitan permisos para acceder a la cámara');
+      if (status !== "granted") {
+        Alert.alert("Permisos necesarios", "Se necesitan permisos para acceder a la cámara");
         return null;
       }
 
@@ -64,18 +63,18 @@ export const useRegister = () => {
         quality: 0.8,
       });
 
-      if (!result.canceled && result.assets && result.assets.length > 0) {
+      if (!result.canceled && result.assets?.length > 0) {
         const image = result.assets[0];
         return {
           uri: image.uri,
-          type: 'image/jpeg',
-          name: `profile_${Date.now()}.jpg`
+          type: "image/jpeg",
+          name: `profile_${Date.now()}.jpg`,
         };
       }
       return null;
     } catch (error) {
-      console.error('❌ Error taking photo:', error);
-      Alert.alert('Error', 'No se pudo tomar la foto');
+      console.error("❌ Error al tomar foto:", error);
+      Alert.alert("Error", "No se pudo tomar la foto");
       return null;
     }
   };
@@ -85,37 +84,25 @@ export const useRegister = () => {
       setLoading(true);
 
       const formData = new FormData();
-      
-      // Agregar campos básicos
-      formData.append('name', data.name.trim());
-      if (data.lastname) formData.append('lastname', data.lastname.trim());
-      formData.append('email', data.email.trim());
-      if (data.phone_number) formData.append('phone_number', data.phone_number.trim());
-      formData.append('password', data.password);
-      formData.append('password_confirmation', data.password_confirmation);
-      
-      // Agregar imagen si existe
+      formData.append("name", data.name.trim());
+      if (data.lastname) formData.append("lastname", data.lastname.trim());
+      formData.append("email", data.email.trim());
+      if (data.phone_number) formData.append("phone_number", data.phone_number.trim());
+      formData.append("password", data.password);
+      formData.append("password_confirmation", data.password_confirmation);
+
       if (data.profile_photo_file) {
-        formData.append('profile_photo_file', data.profile_photo_file);
+        formData.append("profile_photo_file", data.profile_photo_file);
       }
 
-      // Registrar usuario
-      const response = await api.post('/users', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      // 👇 Llama al register del contexto (AuthContext)
+      await registerUser(formData);
 
-      // Login automático después del registro
-      await login(data.email, data.password);
-      
       return { success: true };
-      
     } catch (error: any) {
-      console.log('❌ Error registro:', error.response?.data || error.message);
-      
-      let errorMessage = 'Error al crear la cuenta';
-      
+      console.log("❌ Error registro:", error.response?.data || error.message);
+
+      let errorMessage = "Error al crear la cuenta";
       if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       } else if (error.response?.data?.errors) {
@@ -123,17 +110,12 @@ export const useRegister = () => {
         const firstError = Object.values(backendErrors)[0];
         errorMessage = Array.isArray(firstError) ? firstError[0] : String(firstError);
       }
-      
+
       return { success: false, error: errorMessage };
     } finally {
       setLoading(false);
     }
   };
 
-  return {
-    loading,
-    register,
-    pickImage,
-    takePhoto,
-  };
+  return { loading, register, pickImage, takePhoto };
 };

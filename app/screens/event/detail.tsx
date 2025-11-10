@@ -5,7 +5,7 @@ import { ThemedView } from "@/components/themed-view";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { useGlobalStyles } from "@/constants/globalStyles";
 import { getThemeColors } from "@/constants/theme";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/context/AuthContext";
 import { useEventDetail } from "@/hooks/useEventDetail";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";

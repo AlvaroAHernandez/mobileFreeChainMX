@@ -1,8 +1,9 @@
+// screens/auth/login.tsx
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useGlobalStyles } from "@/constants/globalStyles";
 import { getThemeColors } from "@/constants/theme";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -36,13 +37,9 @@ export default function LoginScreen() {
     try {
       setLoading(true);
       await login(form.email, form.password);
-      router.replace("/(tabs)"); // ir a home
     } catch (error: any) {
-      console.log("❌ Error login:", error.response?.data || error.message);
-      Alert.alert(
-        "Error",
-        error.response?.data?.message || "Error al iniciar sesión"
-      );
+      console.log("❌ Error login:", error);
+      Alert.alert("Error", error.message || "Error al iniciar sesión");
     } finally {
       setLoading(false);
     }
@@ -61,14 +58,14 @@ export default function LoginScreen() {
         <ThemedView style={styles.container}>
           {/* Logo y Header */}
           <View style={styles.header}>
-            <Image 
-              source={require("@/assets/images/1.jpg")} 
-              style={styles.logo}
-              resizeMode="contain"
-            />
-            <ThemedText style={styles.title}>
-              Bienvenido
-            </ThemedText>
+            <View style={styles.logoContainer}>
+              <Image
+                source={require("@/assets/images/logo_free_chain.png")}
+                style={styles.logo}
+                resizeMode="contain"
+              />
+            </View>
+            <ThemedText style={styles.title}>Bienvenido</ThemedText>
             <ThemedText style={styles.subtitle}>
               Inicia sesión en tu cuenta
             </ThemedText>
@@ -96,10 +93,7 @@ export default function LoginScreen() {
               />
 
               <TouchableOpacity
-                style={[
-                  styles.loginButton,
-                  { opacity: loading ? 0.7 : 1 },
-                ]}
+                style={[styles.loginButton, { opacity: loading ? 0.7 : 1 }]}
                 activeOpacity={0.8}
                 onPress={() => {
                   if (loading) return;
@@ -117,19 +111,15 @@ export default function LoginScreen() {
               {/* Enlaces adicionales */}
               <View style={styles.linksContainer}>
                 <TouchableOpacity style={styles.linkItem}>
-                  <Text style={styles.linkText}>
-                    ¿Olvidaste tu contraseña?
-                  </Text>
+                  <Text style={styles.linkText}>¿Olvidaste tu contraseña?</Text>
                 </TouchableOpacity>
-                
+
                 <View style={styles.registerLink}>
-                  <Text style={styles.registerText}>
-                    ¿No tienes cuenta?{" "}
-                  </Text>
-                  <TouchableOpacity onPress={() => router.push("/screens/auth/register")}>
-                    <Text style={styles.registerLinkText}>
-                      Regístrate
-                    </Text>
+                  <Text style={styles.registerText}>¿No tienes cuenta? </Text>
+                  <TouchableOpacity
+                    onPress={() => router.push("/screens/auth/register")}
+                  >
+                    <Text style={styles.registerLinkText}>Regístrate</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -156,11 +146,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 40,
     marginTop: 20,
-  },
-  logo: {
-    width: 120,
-    height: 120,
-    marginBottom: 20,
   },
   title: {
     fontSize: 32,
@@ -240,5 +225,33 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     textDecorationLine: "underline",
+  },
+
+  logoContainer: {
+    backgroundColor: "#f8f9ff",
+    width: 130,
+    height: 130,
+    borderRadius: 65,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: "rgba(59, 91, 254, 0.1)",
+    ...Platform.select({
+      ios: {
+        shadowColor: "#3B5BFE",
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.15,
+        shadowRadius: 16,
+      },
+      android: {
+        elevation: 6,
+        shadowColor: "#3B5BFE",
+      },
+    }),
+  },
+  logo: {
+    width: 70,
+    height: 70,
   },
 });

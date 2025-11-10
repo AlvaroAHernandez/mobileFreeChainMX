@@ -1,4 +1,4 @@
-// components/events/EventCard.tsx (REDISEÑADO)
+// components/events/EventCard.tsx (FINAL)
 import { ThemedText } from "@/components/themed-text";
 import { getThemeColors, Radius } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
@@ -11,18 +11,25 @@ export default function EventCard({ event, onPress }: any) {
     const date = new Date(dateString);
     return {
       day: date.getDate(),
-      month: date.toLocaleDateString('es-ES', { month: 'short' }),
-      weekday: date.toLocaleDateString('es-ES', { weekday: 'short' }),
-      time: date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+      month: date.toLocaleDateString("es-ES", { month: "short" }),
+      weekday: date.toLocaleDateString("es-ES", { weekday: "short" }),
+      time: date.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }),
     };
   };
 
   const dateInfo = event.date ? formatDate(event.date) : null;
 
   return (
-    <Pressable 
-      onPress={onPress} 
-      style={[styles.card, { backgroundColor: Colors.surface }]}
+    <Pressable
+      onPress={onPress}
+      style={[
+        styles.card,
+        {
+          backgroundColor: Colors.surface,
+          borderLeftWidth: event.is_attending ? 4 : 0,
+          borderLeftColor: event.is_attending ? Colors.success : "transparent",
+        },
+      ]}
     >
       {/* Fecha destacada */}
       {dateInfo && (
@@ -38,10 +45,12 @@ export default function EventCard({ event, onPress }: any) {
           <ThemedText style={styles.title} numberOfLines={1}>
             {event.name}
           </ThemedText>
-          {event.is_participating && (
+
+          {/* Badge de asistencia */}
+          {event.is_attending && (
             <View style={[styles.participatingBadge, { backgroundColor: Colors.success }]}>
-              <Ionicons name="checkmark" size={12} color="#fff" />
-              <ThemedText style={styles.participatingText}>Inscrito</ThemedText>
+              <Ionicons name="checkmark-circle" size={14} color="#fff" />
+              <ThemedText style={styles.participatingText}>Asistiré</ThemedText>
             </View>
           )}
         </View>
@@ -55,7 +64,9 @@ export default function EventCard({ event, onPress }: any) {
             {/* Organizador */}
             <View style={styles.organizer}>
               <Image
-                source={{ uri: event.organization?.logo_url || "https://via.placeholder.com/20" }}
+                source={{
+                  uri: event.organization?.logo_url || "https://via.placeholder.com/20",
+                }}
                 style={styles.orgLogo}
               />
               <ThemedText style={styles.orgName} numberOfLines={1}>
@@ -82,7 +93,7 @@ export default function EventCard({ event, onPress }: any) {
                 <ThemedText style={styles.timeText}>{dateInfo.time}</ThemedText>
               </View>
             )}
-            
+
             {event.participants_count !== undefined && (
               <View style={styles.participants}>
                 <Ionicons name="people-outline" size={12} color={Colors.textSecondary} />
