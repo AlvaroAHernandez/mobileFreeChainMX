@@ -48,10 +48,19 @@ export default function HomeScreen() {
         <View style={styles.header}>
           <View style={styles.profileSection}>
             {userData?.full_profile_photo_url ? (
-              <Image
-                source={{ uri: userData.full_profile_photo_url }}
-                style={styles.profileImage}
-              />
+              <>
+                <Image
+                  source={{ uri: userData.full_profile_photo_url }}
+                  style={styles.profileImage}
+                  onError={(e) =>
+                    console.log(
+                      "❌ Error al cargar imagen:",
+                      e.nativeEvent.error
+                    )
+                  }
+                  onLoad={() => console.log("✅ Imagen cargada correctamente")}
+                />
+              </>
             ) : (
               <View style={[styles.profileImage, styles.profilePlaceholder]}>
                 <Ionicons

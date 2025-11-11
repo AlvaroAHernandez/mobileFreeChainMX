@@ -1,10 +1,10 @@
 // context/AuthContext.tsx
 import api from "@/services/api";
 import {
-    clearAuthData,
-    getToken,
-    getUser,
-    saveAuthData,
+  clearAuthData,
+  getToken,
+  getUser,
+  saveAuthData,
 } from "@/utils/storage";
 import { useRouter, useSegments } from "expo-router";
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -27,6 +27,7 @@ interface AuthContextType {
   register: (data: any) => Promise<void>;
   updateUser: (userData: User) => void;
   refreshUser: () => Promise<void>;
+  updateProfile: (data: FormData | any) => Promise<{ success: boolean; data?: User; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -138,9 +139,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   // 🔹 Registro
+  // Dentro de AuthContext.tsx
   const register = async (data: any) => {
     try {
-      const response = await api.post("/users/register", data, {
+      const response = await api.post("/users", data, {
         headers:
           data instanceof FormData
             ? { "Content-Type": "multipart/form-data" }
@@ -148,25 +150,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (response.data.code === 201) {
-        const { user: userData } = response.data.data;
-        const token = userData.token;
+        // ✅ Registro exitoso → ahora hacer login automáticamente
+        const email = data.get ? data.get("email") : data.email;
+        const password = data.get ? data.get("password") : data.password;
 
-        // 1️⃣ Guardar token para autorizar
-        await saveAuthData(token, userData);
+        // 👇 Usa el mismo login ya definido arriba
+        await login(email, password);
 
-        // 2️⃣ Obtener usuario completo
-        const fullUserRes = await api.get(`/users/${userData.id}`);
-        if (fullUserRes.data.code === 200) {
-          const freshUser = fullUserRes.data.data.user;
-
-          // 3️⃣ Guardar user completo
-          await saveAuthData(token, freshUser);
-          setUser(freshUser);
-        } else {
-          setUser(userData);
-        }
-
-        router.replace("/(drawer)");
+        return;
       } else {
         throw new Error(response.data.message || "Error al registrarse");
       }
@@ -232,6 +223,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateProfile = async (data: FormData | any) => {
+    try {
+      const storedUser = await getUser();
+      if (!storedUser?.id) throw new Error("Usuario no encontrado");
+
+      // 🔹 1️⃣ Actualizar usuario básico
+      const response = await api.post(`/users/${storedUser.id}`, data);
+      if (response.data.code !== 200) {
+        throw new Error(
+          response.data.message || "Error al actualizar el usuario"
+        );
+      }
+
+      // 🔹 2️⃣ Obtener usuario completo con relaciones
+      const fullRes = await api.get(`/users/${storedUser.id}`);
+      if (fullRes.data.code !== 200) {
+        throw new Error(fullRes.data.message || "Error al refrescar usuario");
+      }
+
+      const fullUser = fullRes.data.data.user;
+      const token = await getToken();
+
+      // 🔹 3️⃣ Guardar globalmente
+      if (token) {
+        await saveAuthData(token, fullUser);
+        setUser(fullUser);
+      }
+
+      console.log("✅ Usuario actualizado globalmente:", fullUser);
+      return { success: true, data: fullUser };
+    } catch (err: any) {
+      console.error("❌ Error en updateProfile (AuthContext):", err);
+      return {
+        success: false,
+        error: err.response?.data?.message || "Error al actualizar usuario",
+      };
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -242,6 +272,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         register,
         updateUser,
         refreshUser,
+        updateProfile,
       }}
     >
       {children}

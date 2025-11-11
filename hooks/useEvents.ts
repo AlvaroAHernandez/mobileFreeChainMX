@@ -1,7 +1,7 @@
 // hooks/useEvents.ts
+import { useAuth } from "@/context/AuthContext";
 import api from "@/services/api";
 import { useEffect, useState } from "react";
-import { useAuth } from "./useAuth";
 
 export interface Event {
   id: number;

@@ -1,4 +1,4 @@
-// hooks/useProfile.ts
+import { useAuth } from "@/context/AuthContext";
 import api from "@/services/api";
 import { getUser } from "@/utils/storage";
 import * as ImagePicker from "expo-image-picker";
@@ -14,11 +14,13 @@ interface ProfileData {
 }
 
 export const useProfile = () => {
+  const { user, logout, updateProfile: updateProfileContext } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // ✅ Seleccionar imagen de la galería
   const pickImage = async (): Promise<any> => {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -37,12 +39,12 @@ export const useProfile = () => {
         quality: 0.8,
       });
 
-      if (!result.canceled && result.assets && result.assets.length > 0) {
+      if (!result.canceled && result.assets?.length > 0) {
         const image = result.assets[0];
         return {
           uri: image.uri,
-          type: 'image/jpeg',
-          name: `profile_${Date.now()}.jpg`
+          type: "image/jpeg",
+          name: `profile_${Date.now()}.jpg`,
         };
       }
       return null;
@@ -53,24 +55,24 @@ export const useProfile = () => {
     }
   };
 
+  // ✅ Obtener perfil desde la API
   const fetchProfile = async () => {
     try {
-      setLoading(true);
-      setError(null);
+      if (!user?.id) throw new Error("Usuario no encontrado");
 
-      const storedUser = await getUser();
-      if (!storedUser?.id) throw new Error("Usuario no encontrado");
-
-      const response = await api.get(`/users/${storedUser.id}`);
+      const response = await api.get(`/users/${user.id}`);
       setProfile(response.data.data.user);
     } catch (err: any) {
       console.error("❌ Error fetching profile:", err);
-      setError(err.response?.data?.message || "Error al cargar el perfil");
+      if (err.code === 401 || err.response?.status === 401) {
+        await logout(); // Token expirado o inválido
+      }
     } finally {
       setLoading(false);
     }
   };
 
+  // ✅ Actualizar perfil y sincronizar globalmente el usuario
   const updateProfile = async (data: ProfileData) => {
     try {
       setUpdating(true);
@@ -80,32 +82,29 @@ export const useProfile = () => {
       if (!storedUser?.id) throw new Error("Usuario no encontrado");
 
       const formData = new FormData();
-
-      // Agregar campos básicos
       formData.append("name", data.name);
       if (data.lastname) formData.append("lastname", data.lastname);
       if (data.phone_number) formData.append("phone_number", data.phone_number);
       formData.append("email", data.email);
 
-      // Agregar archivo de foto si existe
       if (data.profile_photo_file) {
         formData.append("profile_photo_file", data.profile_photo_file);
       }
 
-      const response = await api.post(`/users/${storedUser.id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const result = await updateProfileContext(formData);
 
-      setProfile(response.data.data);
+      if (!result.success) {
+        throw new Error(result.error || "Error al actualizar el usuario");
+      }
 
-      Alert.alert("¡Éxito!", "Perfil actualizado correctamente");
-      return { success: true, data: response.data };
+      setProfile(result.data);
+      Alert.alert("✅ Éxito", "Perfil actualizado correctamente");
+
+      return { success: true, data: result.data };
     } catch (err: any) {
       console.error("❌ Error updating profile:", err);
       const errorMessage =
-        err.response?.data?.message || "Error al actualizar el perfil";
+        err.response?.data?.message || err.message || "Error al actualizar perfil";
       setError(errorMessage);
       Alert.alert("Error", errorMessage);
       return { success: false, error: errorMessage };
@@ -115,8 +114,10 @@ export const useProfile = () => {
   };
 
   useEffect(() => {
-    fetchProfile();
-  }, []);
+    if (user) {
+      fetchProfile();
+    }
+  }, [user]);
 
   return {
     profile,
