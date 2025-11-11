@@ -1,5 +1,5 @@
 // hooks/useCreateOrganization.ts
-import { useAuth } from "@/context/AuthContext"; // ✅ contexto actual
+import { useAuth } from "@/context/AuthContext";
 import api from "@/services/api";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
@@ -41,10 +41,11 @@ export const useCreateOrganization = () => {
         const image = result.assets[0];
         return {
           uri: image.uri,
-          type: "image/jpeg",
-          name: `logo_${Date.now()}.jpg`,
+          type: image.mimeType || "image/jpeg",
+          name: image.fileName || `logo_${Date.now()}.jpg`,
         };
       }
+
       return null;
     } catch (error) {
       console.error("❌ Error picking image:", error);
@@ -53,7 +54,7 @@ export const useCreateOrganization = () => {
     }
   };
 
-  // 🏍️ Crear club
+  // 🏍️ Crear organización
   const createOrganization = async (data: CreateOrganizationData) => {
     try {
       setLoading(true);
@@ -63,16 +64,23 @@ export const useCreateOrganization = () => {
       formData.append("name", data.name);
       formData.append("description", data.description || "");
       formData.append("address", data.address || "");
-      if (data.logo_file) formData.append("logo_file", data.logo_file);
 
-      // 👇 si tu backend necesita saber quién crea el club (opcional)
+      // ✅ IMPORTANTE: enviar la imagen correctamente
+      if (data.logo_file) {
+        formData.append("logo_file", {
+          uri: data.logo_file.uri,
+          type: data.logo_file.type || "image/jpeg",
+          name: data.logo_file.name || `logo_${Date.now()}.jpg`,
+        } as any);
+      }
+
+      // 👇 opcional: vincular el usuario creador
       if (user?.id) formData.append("user_id", String(user.id));
 
       const response = await api.post("/organizations", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      // 🔄 refrescar el usuario para que aparezca su nuevo club en la app
       await refreshUser();
 
       Alert.alert("¡Éxito!", "Club creado correctamente", [

@@ -176,7 +176,7 @@ export default function HomeScreen() {
         </View>
 
         {/* Mi Garaje */}
-        <View style={styles.section}>
+        {/* <View style={styles.section}>
           <SectionHeader
             title="Mi Garaje"
             subtitle={`${motos.length} motocicleta${
@@ -221,7 +221,7 @@ export default function HomeScreen() {
             onPress={() => router.push("/screens/motorcycle/AddEditMotoScreen")}
             style={styles.addButton}
           />
-        </View>
+        </View> */}
 
         <View style={{ height: 40 }} />
       </ScrollView>

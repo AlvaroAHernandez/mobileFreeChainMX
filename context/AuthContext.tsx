@@ -27,7 +27,9 @@ interface AuthContextType {
   register: (data: any) => Promise<void>;
   updateUser: (userData: User) => void;
   refreshUser: () => Promise<void>;
-  updateProfile: (data: FormData | any) => Promise<{ success: boolean; data?: User; error?: string }>;
+  updateProfile: (
+    data: FormData | any
+  ) => Promise<{ success: boolean; data?: User; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -45,9 +47,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (storedUser && token) {
         try {
-          const response = await api.get("/users/profile");
+          // 🔥 Usa la ruta correcta con el ID del usuario
+          const response = await api.get(`/users/${storedUser.id}`);
+
           if (response.data.code === 200) {
-            const freshUser = response.data.data.user;
+            const freshUser = response.data.data.user || response.data.data;
             await saveAuthData(token, freshUser);
             setUser(freshUser);
           } else {
@@ -55,15 +59,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         } catch (error: any) {
           if (error.response?.status === 401) {
-            // Solo limpiar si realmente expiró
+            // Token realmente expirado
             await clearAuthData();
             setUser(null);
           } else {
-            // Mantener usuario si fue error de red u otro
             console.warn(
               "⚠️ Error no crítico en verificación del token:",
               error
             );
+            // Mantener usuario si fue error de red
             setUser(storedUser);
           }
         }

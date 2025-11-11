@@ -115,7 +115,7 @@ export default function ClubExploreScreen() {
                 key={organization.id}
                 organization={organization}
                 onPress={() =>
-                  router.push(`/screens/club/detail?id=${organization.id}` as any)
+                  router.push(`/(tabs)/club/detail?id=${organization.id}` as any)
                 }
                 onJoin={joinOrganization}
                 onLeave={leaveOrganization}
@@ -138,7 +138,7 @@ export default function ClubExploreScreen() {
                 key={organization.id}
                 organization={organization}
                 onPress={() =>
-                  router.push(`/screens/club/detail?id=${organization.id}` as any)
+                  router.push(`/(tabs)/club/detail?id=${organization.id}` as any)
                 }
                 onJoin={joinOrganization}
                 onLeave={leaveOrganization}
